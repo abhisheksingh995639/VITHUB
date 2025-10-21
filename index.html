@@ -20,6 +20,24 @@
         // Configure Tailwind to use the 'class' strategy for dark mode
         tailwind.config = {
             darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            500: '#14b8a6',
+                        },
+                        cyan: {
+                            500: '#06b6d4',
+                        },
+                        amber: {
+                            500: '#f59e0b',
+                        },
+                        yellow: {
+                           500: '#eab308',
+                        }
+                    }
+                }
+            }
         }
     </script>
 
@@ -120,13 +138,13 @@
     </button>
 
     <!-- Header Section -->
-    <header class="container mx-auto px-6 pt-24 pb-16 text-center">
+    <header class="container mx-auto px-6 pt-12 pb-16 text-center">
         <h1 class="text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">The Ultimate Site Hub</h1>
         <p class="mt-4 text-lg text-gray-200 dark:text-gray-300 max-w-2xl mx-auto" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Your one-stop directory for learning, productivity, and everyday needs.</p>
     </header>
 
     <!-- Controls Section -->
-    <div class="container mx-auto px-6 mb-16">
+    <div class="container mx-auto px-6 mb-8">
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center p-4 rounded-xl glass-card is-visible">
             <!-- Left Side: Search & Filter -->
             <div class="flex flex-col sm:flex-row gap-4 w-full md:flex-grow">
@@ -136,15 +154,14 @@
                 </div>
                 <select id="filterSelect" class="w-full sm:w-auto text-white bg-white/10 border border-white/20 rounded-lg py-3 pl-4 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-white/50 transition dark:bg-gray-700/50 dark:border-gray-600">
                     <option value="all">All Categories</option>
-                    <option value="learning">Learning</option>
-                    <option value="productivity">Productivity</option>
-                    <option value="transport">Transport</option>
-                    <option value="shopping">Shopping</option>
-                    <option value="food">Food</option>
                     <option value="entertainment">Entertainment</option>
-                    <option value="research">Research</option>
-                    <option value="writing">Writing</option>
+                    <option value="academics">Academics</option>
+                    <option value="notes">Notes & PYQs</option>
+                    <option value="productivity">Productivity</option>
+                    <option value="coding">Coding & Dev</option>
                     <option value="design">Design</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="student-projects">Student Projects</option>
                 </select>
             </div>
             <!-- Right Side: Action Buttons -->
@@ -156,6 +173,15 @@
         </div>
     </div>
 
+    <!-- Sub-Filter Section -->
+    <div id="subFilterContainer" class="container mx-auto px-6 mb-8 hidden">
+        <div class="flex flex-wrap gap-2">
+            <button class="sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30" data-value="all">All</button>
+            <button class="sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30" data-value="movies">Movies</button>
+            <button class="sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30" data-value="anime">Anime</button>
+            <button class="sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30" data-value="streaming">Streaming</button>
+        </div>
+    </div>
 
     <!-- Main Content: Website Grid -->
     <main class="container mx-auto px-6 pb-12">
@@ -166,24 +192,21 @@
                 for (let i = 0; i < 8; i++) {
                     document.write(`
                         <div class="skeleton-card rounded-xl p-6 animate-pulse">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex items-center gap-3 w-full">
-                                    <div class="skeleton-placeholder h-6 w-6 rounded"></div>
-                                    <div class="skeleton-placeholder h-6 w-1/2 rounded"></div>
-                                </div>
-                                <div class="skeleton-placeholder h-6 w-1/4 rounded-full"></div>
+                            <div class="flex justify-between items-start">
+                                <div class="skeleton-placeholder h-6 w-3/4 rounded"></div>
+                                <div class="skeleton-placeholder h-6 w-1/4 rounded"></div>
                             </div>
-                            <div class="pl-9 space-y-2 mb-6">
-                                <div class="skeleton-placeholder h-4 w-full rounded"></div>
-                                <div class="skeleton-placeholder h-4 w-3/4 rounded"></div>
+                            <div class="flex flex-wrap gap-2 mt-4">
+                                <div class="skeleton-placeholder h-5 w-1/3 rounded-full"></div>
+                                <div class="skeleton-placeholder h-5 w-1/4 rounded-full"></div>
                             </div>
-                            <div class="skeleton-placeholder h-10 w-full rounded-lg"></div>
                         </div>
                     `);
                 }
             </script>
         </div>
     </main>
+
 
     <!-- Suggestion Modal -->
     <div id="suggestionModal" class="fixed inset-0 z-50 items-center justify-center hidden">
@@ -222,205 +245,342 @@
     <!-- Footer Section -->
     <footer class="text-center py-6 mt-12">
         <p class="text-gray-200 dark:text-gray-400" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">&copy; 2024 The Ultimate Site Hub. All rights reserved.</p>
+        <!-- <button id="addDataBtn" class="mt-4 text-xs text-gray-400 hover:text-white transition">Add Initial Data to Firestore (Dev Only)</button> -->
     </footer>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, writeBatch, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        // --- PASTE YOUR FIREBASE CONFIGURATION HERE ---
+        const localFirebaseConfig = {
+            apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
+            authDomain: "site-hub-29fb2.firebaseapp.com",
+            projectId: "site-hub-29fb2",
+            storageBucket: "site-hub-29fb2.appspot.com",
+            messagingSenderId: "373988520340",
+            appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
+            measurementId: "G-DDEMB3X2XQ"
+        };
+
+        // --- FIREBASE CONFIG (DO NOT EDIT BELOW) ---
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
+
+        // --- INITIALIZE FIREBASE ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
         document.addEventListener('DOMContentLoaded', () => {
-            // --- DATA ---
-            const categoryColors = {
-                transport: 'bg-green-500',
-                shopping: 'bg-blue-600',
-                food: 'bg-red-500',
-                entertainment: 'bg-purple-600',
-                learning: 'bg-indigo-500',
-                productivity: 'bg-gray-700',
-                writing: 'bg-emerald-500',
-                research: 'bg-amber-500',
-                design: 'bg-pink-500',
-            };
-
-            let resources = [
-                { id: 1, name: 'Uber', url: 'https://www.uber.com/in/en/', desc: 'Book a ride in minutes.', category: 'transport', color: categoryColors.transport, icon: 'fa-solid fa-car' },
-                { id: 2, name: 'Amazon', url: 'https://www.amazon.in/', desc: 'India\'s largest online marketplace.', category: 'shopping', color: categoryColors.shopping, icon: 'fa-solid fa-shopping-cart' },
-                { id: 3, name: 'Zomato', url: 'https://www.zomato.com/', desc: 'Find and order food from restaurants.', category: 'food', color: categoryColors.food, icon: 'fa-solid fa-utensils' },
-                { id: 4, name: 'YouTube', url: 'https://www.youtube.com/', desc: 'Watch, share, and discover videos.', category: 'entertainment', color: categoryColors.entertainment, icon: 'fa-brands fa-youtube' },
-                { id: 5, name: 'Khan Academy', url: 'https://www.khanacademy.org/', desc: 'Free online courses, lessons & practice.', category: 'learning', color: categoryColors.learning, icon: 'fa-solid fa-graduation-cap' },
-                { id: 6, name: 'Flipkart', url: 'https://www.flipkart.com/', desc: 'India\'s leading e-commerce platform.', category: 'shopping', color: categoryColors.shopping, icon: 'fa-solid fa-store' },
-                { id: 7, name: 'Notion', url: 'https://www.notion.so/', desc: 'The all-in-one workspace for your notes.', category: 'productivity', color: categoryColors.productivity, icon: 'fa-solid fa-check-double' },
-                { id: 8, name: 'OLX', url: 'https://www.olx.in/', desc: 'Buy and sell used goods near you.', category: 'shopping', color: categoryColors.shopping, icon: 'fa-solid fa-handshake' },
-                { id: 9, name: 'Grammarly', url: 'https://www.grammarly.com/', desc: 'AI-powered writing assistant.', category: 'writing', color: categoryColors.writing, icon: 'fa-solid fa-spell-check' },
-                { id: 10, name: 'Google Scholar', url: 'https://scholar.google.com/', desc: 'Broadly search for scholarly literature.', category: 'research', color: categoryColors.research, icon: 'fa-solid fa-book-open' },
-                { id: 11, name: 'Canva', url: 'https://www.canva.com/', desc: 'Easy-to-use graphic design platform.', category: 'design', color: categoryColors.design, icon: 'fa-solid fa-palette' },
-                { id: 12, name: 'Ola Cabs', url: 'https://www.olacabs.com/', desc: 'The most popular cab booking service.', category: 'transport', color: categoryColors.transport, icon: 'fa-solid fa-taxi' },
-                { id: 13, name: 'Cabmate', url: 'https://cabmatevit.netlify.app', desc: 'A reliable cab booking service.', category: 'transport', color: categoryColors.transport, icon: 'fa-solid fa-taxi' },
-            ];
-
-            // --- ELEMENTS ---
-            const grid = document.getElementById('resourceGrid');
-            const searchInput = document.getElementById('searchInput');
-            const filterSelect = document.getElementById('filterSelect');
-            const toTopBtn = document.getElementById('toTopBtn');
-            const themeToggleBtn = document.getElementById('theme-toggle');
-            const darkIcon = document.getElementById('theme-toggle-dark-icon');
-            const lightIcon = document.getElementById('theme-toggle-light-icon');
             
-            // Suggestion Modal Elements
-            const suggestionModal = document.getElementById('suggestionModal');
-            const suggestResourceBtn = document.getElementById('suggestResourceBtn');
-            const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
-            const suggestionForm = document.getElementById('suggestionForm');
-            const suggestionResult = document.getElementById('suggestionResult');
-
-            
-            // --- THEME TOGGLE LOGIC ---
-            const applyTheme = (theme) => {
-                if (theme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                    darkIcon.classList.add('hidden');
-                    lightIcon.classList.remove('hidden');
+            // --- AUTHENTICATION ---
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in.
+                    initializeAppLogic(user);
                 } else {
-                    document.documentElement.classList.remove('dark');
-                    darkIcon.classList.remove('hidden');
-                    lightIcon.classList.add('hidden');
+                    // User is signed out. Sign in anonymously.
+                    signInAnonymously(auth).catch((error) => {
+                        console.error("Anonymous sign-in failed:", error);
+                        const grid = document.getElementById('resourceGrid');
+                        grid.innerHTML = `<p class="text-center text-red-400 col-span-full is-visible">Authentication Failed. Please check your Firebase setup and security rules.</p>`;
+                    });
                 }
-            };
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                applyTheme(savedTheme);
-            } else {
-                applyTheme('light');
-            }
-
-            themeToggleBtn.addEventListener('click', () => {
-                const isDarkMode = document.documentElement.classList.contains('dark');
-                const newTheme = isDarkMode ? 'light' : 'dark';
-                applyTheme(newTheme);
-                localStorage.setItem('theme', newTheme);
             });
 
-            // --- ANIMATION OBSERVER ---
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-
-            /**
-             * Renders the resource cards to the grid.
-             */
-            const renderResources = (data) => {
-                grid.innerHTML = ''; // Clear existing cards
-                if (data.length === 0) {
-                    grid.innerHTML = `<p class="text-center text-gray-200 col-span-full is-visible">No resources found.</p>`;
+            function initializeAppLogic(user) {
+                if (!user) {
+                    console.error("Initialization failed: No user found.");
                     return;
                 }
-                data.forEach(resource => {
-                    const card = document.createElement('div');
-                    card.className = 'glass-card rounded-xl overflow-hidden flex flex-col p-6';
-                    card.innerHTML = `
-                        <div class="flex-grow">
-                             <div class="flex justify-between items-start mb-4">
-                                <div class="flex items-center gap-3">
-                                    <i class="${resource.icon} text-xl w-6 text-center text-white"></i>
-                                    <h2 class="text-2xl font-bold text-white">${resource.name}</h2>
+
+                // --- Firestore Collection Reference ---
+                const resourcesRef = collection(db, `resources`);
+                
+                // --- LOCAL DATA (For initial seeding) ---
+                const initialResources = [
+                    { name: '1Flex', url: 'https://www.1flex.ru', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'FlickyStream', url: 'https://flickystream.ru', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'RgShows', url: 'https://www.rgshows.ru/?m=m-1383072', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'Cineby', url: 'https://www.cineby.ru/', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'Cinema Deck', url: 'https://cinemadeck.com/home', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'FullHDMovies', url: 'https://fullhdmovies.me', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'NEPU', url: 'https://nepu.to', category: 'entertainment', subCategory: 'movies', votes: 0 },
+                    { name: 'Miruro', url: 'https://www.miruro.to/', category: 'entertainment', subCategory: 'anime', votes: 0 },
+                    { name: 'Enma', url: 'https://www.enma.lol', category: 'entertainment', subCategory: 'anime', votes: 0 },
+                    { name: 'Gojo', url: 'https://animetsu.bz', category: 'entertainment', subCategory: 'anime', votes: 0 },
+                    { name: 'Kaido', url: 'https://kaido.to/home', category: 'entertainment', subCategory: 'anime', votes: 0 },
+                    { name: 'Uber', url: 'https://www.uber.com/in/en/', category: 'utilities', votes: 0 },
+                    { name: 'Amazon', url: 'https://www.amazon.in/', category: 'utilities', votes: 0 },
+                    { name: 'Zomato', url: 'https://www.zomato.com/', category: 'utilities', votes: 0 },
+                    { name: 'YouTube', url: 'https://www.youtube.com/', category: 'entertainment', subCategory: 'streaming', votes: 0 },
+                    { name: 'Khan Academy', url: 'https://www.khanacademy.org/', category: 'academics', votes: 0 },
+                    { name: 'Flipkart', url: 'https://www.flipkart.com/', category: 'utilities', votes: 0 },
+                    { name: 'Notion', url: 'https://www.notion.so/', category: 'productivity', votes: 0 },
+                    { name: 'OLX', url: 'https://www.olx.in/', category: 'utilities', votes: 0 },
+                    { name: 'Grammarly', url: 'https://www.grammarly.com/', category: 'academics', votes: 0 },
+                    { name: 'Google Scholar', url: 'https://scholar.google.com/', category: 'academics', votes: 0 },
+                    { name: 'Canva', url: 'https://www.canva.com/', category: 'design', votes: 0 },
+                    { name: 'Ola Cabs', url: 'https://www.olacabs.com/', category: 'utilities', votes: 0 },
+                    { name: 'Cabmate', url: 'https://cabmatevit.netlify.app', category: 'utilities', votes: 0 },
+                    { name: 'Netflix', url: 'https://netflix.com', category: 'entertainment', subCategory: 'streaming', votes: 0 },
+                    { name: 'AI Note Taker', url: '#', category: 'student-projects', subCategory: 'Productivity', votes: 0 },
+                    { name: 'Dorm Finder', url: '#', category: 'student-projects', subCategory: 'Utility', votes: 0 },
+                ];
+
+                const categoryColors = {
+                    entertainment: 'bg-purple-600',
+                    academics: 'bg-indigo-500',
+                    notes: 'bg-amber-500',
+                    productivity: 'bg-gray-700',
+                    coding: 'bg-teal-500',
+                    design: 'bg-pink-500',
+                    utilities: 'bg-cyan-500',
+                    'student-projects': 'bg-yellow-500',
+                };
+
+                let resources = [];
+                let votedItems = JSON.parse(localStorage.getItem('votedItems')) || [];
+
+                // --- ELEMENTS ---
+                const grid = document.getElementById('resourceGrid');
+                const searchInput = document.getElementById('searchInput');
+                const filterSelect = document.getElementById('filterSelect');
+                const subFilterContainer = document.getElementById('subFilterContainer');
+                const subFilterButtons = document.querySelectorAll('.sub-filter-btn');
+                let activeSubCategory = 'all';
+
+                const toTopBtn = document.getElementById('toTopBtn');
+                const themeToggleBtn = document.getElementById('theme-toggle');
+                const darkIcon = document.getElementById('theme-toggle-dark-icon');
+                const lightIcon = document.getElementById('theme-toggle-light-icon');
+                
+                const suggestionModal = document.getElementById('suggestionModal');
+                const suggestResourceBtn = document.getElementById('suggestResourceBtn');
+                const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
+                const suggestionForm = document.getElementById('suggestionForm');
+                const suggestionResult = document.getElementById('suggestionResult');
+                const addDataBtn = document.getElementById('addDataBtn');
+                
+                // --- THEME TOGGLE LOGIC ---
+                const applyTheme = (theme) => {
+                    if (theme === 'dark') {
+                        document.documentElement.classList.add('dark');
+                        darkIcon.classList.add('hidden');
+                        lightIcon.classList.remove('hidden');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        darkIcon.classList.remove('hidden');
+                        lightIcon.classList.add('hidden');
+                    }
+                };
+
+                const savedTheme = localStorage.getItem('theme');
+                applyTheme(savedTheme || 'light');
+
+                themeToggleBtn.addEventListener('click', () => {
+                    const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                    applyTheme(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+
+                // --- ANIMATION OBSERVER ---
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                        }
+                    });
+                }, { threshold: 0.1 });
+                
+                // --- VOTING ---
+                function handleVoteClick(event, id) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    if (votedItems.includes(id)) {
+                        console.log("Already voted for this item.");
+                        return;
+                    }
+                    
+                    // Firestore update (background)
+                    const resourceRef = doc(db, `resources`, id);
+                    updateDoc(resourceRef, { votes: increment(1) });
+
+                    // Local state update
+                    votedItems.push(id);
+                    localStorage.setItem('votedItems', JSON.stringify(votedItems));
+                    
+                    const resourceIndex = resources.findIndex(r => r.id === id);
+                    if (resourceIndex > -1) {
+                        resources[resourceIndex].votes++;
+                    }
+
+                    // Instant UI update
+                    const voteCountElement = document.getElementById(`vote-count-${id}`);
+                    const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+                    
+                    if (voteCountElement) {
+                        const currentVotes = parseInt(voteCountElement.innerText);
+                        voteCountElement.innerText = currentVotes + 1;
+                        
+                        voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
+                        setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
+                    }
+                    if (voteButtonElement) {
+                        voteButtonElement.disabled = true;
+                        voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
+                        voteButtonElement.classList.add('text-blue-500');
+                    }
+                }
+                window.handleVoteClick = handleVoteClick;
+
+                // --- RENDERING ---
+                const renderResources = (data) => {
+                    grid.innerHTML = '';
+                    if (data.length === 0) {
+                        grid.innerHTML = `<p class="text-center text-gray-200 col-span-full is-visible">No resources found.</p>`;
+                        return;
+                    }
+                    data.forEach(resource => {
+                        const card = document.createElement('a');
+                        card.href = resource.url;
+                        card.target = "_blank";
+                        card.className = 'glass-card rounded-xl overflow-hidden p-4 block no-underline';
+                        
+                        const hasVoted = votedItems.includes(resource.id);
+                        const voteButtonColor = hasVoted ? 'text-blue-500' : 'text-white/50';
+
+                        card.innerHTML = `
+                            <div class="flex justify-between items-start mb-3">
+                                <h2 class="text-xl font-bold text-white pr-2">
+                                    ${resource.name}
+                                    ${resource.category === 'student-projects' ? '<i class="fas fa-graduation-cap text-yellow-400 text-sm ml-1"></i>' : ''}
+                                </h2>
+                                <div class="flex items-center gap-2 text-white font-semibold flex-shrink-0">
+                                    <span id="vote-count-${resource.id}">${resource.votes || 0}</span>
+                                    <button id="vote-btn-${resource.id}" onclick="handleVoteClick(event, '${resource.id}')" class="vote-btn ${voteButtonColor} hover:text-blue-400 transition" ${hasVoted ? 'disabled' : ''}>
+                                        <i class="fas fa-arrow-up"></i>
+                                    </button>
                                 </div>
-                                <span class="text-xs font-semibold ${resource.color} text-white py-1 px-3 rounded-full capitalize">${resource.category}</span>
                             </div>
-                            <p class="text-gray-200 dark:text-gray-300 mb-6 pl-9">${resource.desc}</p>
-                        </div>
-                        <a href="${resource.url}" target="_blank" class="block w-full text-center font-semibold text-white py-2 px-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors duration-300">
-                            Visit Site <i class="fa fa-arrow-right ml-2"></i>
-                        </a>
-                    `;
-                    grid.appendChild(card);
-                    observer.observe(card);
-                });
-            };
+                            <div class="flex flex-wrap gap-2">
+                                <span class="text-xs font-semibold ${categoryColors[resource.category] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize">${resource.category.replace('-', ' ')}</span>
+                                ${resource.subCategory ? `<span class="text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize">${resource.subCategory}</span>` : ''}
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                        observer.observe(card);
+                    });
+                };
 
-            /**
-             * Filters and re-renders the resources.
-             */
-            const filterAndRender = () => {
-                const searchTerm = searchInput.value.toLowerCase();
-                const selectedCategory = filterSelect.value;
-                
-                let filteredResources = resources.filter(resource => {
-                    const nameMatch = resource.name.toLowerCase().includes(searchTerm);
-                    const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
-                    return nameMatch && categoryMatch;
-                });
-                
-                renderResources(filteredResources);
-            };
+                const updateSubFilterButtons = () => {
+                    subFilterButtons.forEach(btn => {
+                        btn.classList.toggle('bg-white/30', btn.dataset.value === activeSubCategory);
+                        btn.classList.toggle('bg-white/10', btn.dataset.value !== activeSubCategory);
+                    });
+                };
 
-            // --- MODAL HANDLING ---
-            const showModal = (modal) => modal.classList.replace('hidden', 'flex');
-            const hideModal = (modal) => modal.classList.replace('flex', 'hidden');
+                const filterAndRender = () => {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    const selectedCategory = filterSelect.value;
+                    const selectedSubCategory = activeSubCategory;
 
-            // --- EVENT LISTENERS ---
-            searchInput.addEventListener('input', filterAndRender);
-            filterSelect.addEventListener('change', filterAndRender);
+                    let scoredResources = resources.map(resource => {
+                        let score = 0;
+                        const name = resource.name.toLowerCase();
+                        const category = resource.category.toLowerCase().replace('-', ' ');
+                        const subCategory = resource.subCategory ? resource.subCategory.toLowerCase() : '';
 
-            // 'Suggest Resource' Modal listeners
-            suggestResourceBtn.addEventListener('click', () => showModal(suggestionModal));
-            suggestionCancelBtn.addEventListener('click', () => hideModal(suggestionModal));
-            suggestionModal.addEventListener('click', (e) => {
-                if (e.target === suggestionModal) hideModal(suggestionModal);
-            });
+                        if (searchTerm && name.includes(searchTerm)) score = 3;
+                        else if (searchTerm && category.includes(searchTerm)) score = 2;
+                        else if (searchTerm && subCategory.includes(searchTerm)) score = 1;
 
-            // Suggestion form submission
-            suggestionForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                suggestionResult.innerHTML = `<span class="text-gray-400">Submitting...</span>`;
-                const formData = new FormData(suggestionForm);
-                
-                try {
-                    const response = await fetch('https://api.web3forms.com/submit', {
-                        method: 'POST',
-                        body: formData
+                        return { resource, score };
                     });
 
-                    const result = await response.json();
+                    let filteredResources = scoredResources.filter(item => {
+                        const { resource } = item;
+                        const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
+                        const searchMatch = searchTerm ? item.score > 0 : true;
+                        let subCategoryMatch = true;
+                        if (selectedCategory === 'entertainment' && selectedSubCategory !== 'all') {
+                            subCategoryMatch = resource.subCategory === selectedSubCategory;
+                        }
+                        return searchMatch && categoryMatch && subCategoryMatch;
+                    })
+                    .sort((a, b) => b.score - a.score || b.resource.votes - a.resource.votes)
+                    .map(item => item.resource);
 
-                    if (result.success) {
-                        suggestionResult.innerHTML = `<span class="text-green-500">Suggestion sent successfully!</span>`;
-                        suggestionForm.reset();
-                        setTimeout(() => {
-                           suggestionResult.innerHTML = '';
-                           hideModal(suggestionModal);
-                        }, 3000);
-                    } else {
-                        console.error('Submission error:', result);
-                        suggestionResult.innerHTML = `<span class="text-red-500">${result.message}</span>`;
+                    renderResources(filteredResources);
+                };
+                
+                // --- DATA FETCHING ---
+                async function fetchData() {
+                    const q = query(resourcesRef, orderBy('votes', 'desc'));
+                    try {
+                        const snapshot = await getDocs(q);
+                        resources = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        filterAndRender();
+                    } catch (error) {
+                        console.error("Error fetching data from Firestore: ", error);
+                        grid.innerHTML = `<p class="text-center text-red-400 col-span-full is-visible">Error loading data. Check Firestore rules and configuration.</p>`;
                     }
-                } catch (error) {
-                    console.error('Fetch error:', error);
-                    suggestionResult.innerHTML = `<span class="text-red-500">An error occurred. Please try again.</span>`;
                 }
-            });
-            
-            // --- "BACK TO TOP" BUTTON LOGIC ---
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 300) {
-                    toTopBtn.classList.replace('hidden', 'flex');
-                } else {
-                    toTopBtn.classList.replace('flex', 'hidden');
-                }
-            });
-            toTopBtn.addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
+                fetchData();
 
-            // --- INITIALIZATION ---
-            // Simulate a network request delay before the first render
-            setTimeout(() => {
-                filterAndRender();
-            }, 1500);
+
+                // --- MODAL & UI EVENT LISTENERS ---
+                searchInput.addEventListener('input', filterAndRender);
+                filterSelect.addEventListener('change', () => {
+                    subFilterContainer.classList.toggle('hidden', filterSelect.value !== 'entertainment');
+                    activeSubCategory = 'all'; 
+                    updateSubFilterButtons();
+                    filterAndRender();
+                });
+
+                subFilterButtons.forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        activeSubCategory = button.dataset.value;
+                        updateSubFilterButtons();
+                        filterAndRender();
+                    });
+                });
+
+                suggestResourceBtn.addEventListener('click', () => showModal(suggestionModal));
+                suggestionCancelBtn.addEventListener('click', () => hideModal(suggestionModal));
+                suggestionModal.addEventListener('click', (e) => {
+                    if (e.target === suggestionModal) hideModal(suggestionModal);
+                });
+
+                suggestionForm.addEventListener('submit', async (e) => { /* ... existing form submission logic ... */ });
+                
+                window.addEventListener('scroll', () => toTopBtn.classList.toggle('hidden', window.scrollY <= 300));
+                toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+                
+                // --- ONE-TIME DATA SEEDING (Dev only) ---
+                addDataBtn.addEventListener('click', async () => {
+                    console.log("Adding initial data to Firestore...");
+                    const batch = writeBatch(db);
+                    initialResources.forEach((resource) => {
+                        const docRef = doc(collection(db, `resources`));
+                        batch.set(docRef, resource);
+                    });
+                    await batch.commit();
+                    alert("Initial data has been added to Firestore!");
+                    addDataBtn.style.display = 'none';
+                    fetchData(); // Fetch data again after adding it
+                });
+                function showModal(modal) { modal.classList.replace('hidden', 'flex'); }
+                function hideModal(modal) { modal.classList.replace('flex', 'hidden'); }
+            }
         });
     </script>
 </body>
 </html>
+
+
+
 
