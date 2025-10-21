@@ -213,8 +213,8 @@
         <div class="modal-bg absolute inset-0"></div>
         <div class="relative w-full max-w-md p-8 m-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
             <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Suggest a Site</h2>
-            <form id="suggestionForm">
-                 <input type="hidden" name="apikey" value="76a4594d-6f73-47f1-b59e-7472327cdb0c">
+            <form id="suggestionForm" method="POST">
+                 <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c">
                 <div class="mb-4">
                     <label for="suggestSiteName" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Site Name</label>
                     <input type="text" id="suggestSiteName" name="Site Name" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
@@ -622,6 +622,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
