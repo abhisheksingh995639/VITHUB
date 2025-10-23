@@ -17,24 +17,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
-        // Configure Tailwind to use the 'class' strategy for dark mode
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        teal: {
-                            500: '#14b8a6',
-                        },
-                        cyan: {
-                            500: '#06b6d4',
-                        },
-                        amber: {
-                            500: '#f59e0b',
-                        },
-                        yellow: {
-                           500: '#eab308',
-                        }
+                        teal: { 500: '#14b8a6' },
+                        cyan: { 500: '#06b6d4' },
+                        amber: { 500: '#f59e0b' },
+                        yellow: { 500: '#eab308' }
                     }
                 }
             }
@@ -42,10 +33,7 @@
     </script>
 
     <style>
-        /* Custom Styles */
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
             background-image: url('https://images.unsplash.com/photo-1554034483-04fda0d3507b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80');
@@ -55,10 +43,9 @@
             transition: background-color 0.5s ease-in-out, background-image 0.5s ease-in-out;
         }
 
-        /* --- Dark Mode Styles --- */
         .dark body {
             background-image: none;
-            background-color: #111827; /* Tailwind's gray-900 */
+            background-color: #111827;
         }
         .dark .glass-card, .dark .skeleton-card {
             background: rgba(0, 0, 0, 0.2);
@@ -72,17 +59,16 @@
              background: rgba(0, 0, 0, 0.7);
         }
         .dark #suggestionModal > div {
-            background-color: #1f2937; /* gray-800 */
+            background-color: #1f2937;
         }
         .dark select option {
-            background-color: #374151; /* gray-700 */
-            color: #f3f4f6; /* gray-100 */
+            background-color: #374151;
+            color: #f3f4f6;
         }
         .dark .skeleton-placeholder {
             background-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* Glassmorphism Card Style */
         .glass-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
@@ -92,7 +78,6 @@
             transition: all 0.3s ease;
             opacity: 0;
             transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
         .glass-card.is-visible {
             opacity: 1;
@@ -104,19 +89,16 @@
             transform: translateY(-5px) !important;
         }
 
-        /* Modal styles */
         .modal-bg {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(5px);
             -webkit-backdrop-filter: blur(5px);
         }
 
-        /* Fix for dropdown option visibility */
         select option {
             color: #000;
         }
 
-        /* --- Skeleton Loader Styles --- */
         .skeleton-card {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(12px);
@@ -129,15 +111,6 @@
         }
     </style>
 </head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZHBCHVYK94"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ZHBCHVYK94');
-</script>
 <body class="text-gray-800 dark:text-gray-200">
 
     <!-- Theme Toggle Button -->
@@ -155,7 +128,6 @@
     <!-- Controls Section -->
     <div class="container mx-auto px-6 mb-8">
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center p-4 rounded-xl glass-card is-visible">
-            <!-- Left Side: Search & Filter -->
             <div class="flex flex-col sm:flex-row gap-4 w-full md:flex-grow">
                 <div class="relative flex-grow">
                     <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
@@ -173,7 +145,6 @@
                     <option value="student-projects">Student Projects</option>
                 </select>
             </div>
-            <!-- Right Side: Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
                 <button id="suggestResourceBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg flex items-center justify-center gap-2 w-full">
                     <i class="fa fa-lightbulb"></i> Suggest
@@ -195,9 +166,7 @@
     <!-- Main Content: Website Grid -->
     <main class="container mx-auto px-6 pb-12">
         <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <!-- Skeleton cards are pre-rendered here -->
             <script>
-                // Generate 8 skeleton cards on page load
                 for (let i = 0; i < 8; i++) {
                     document.write(`
                         <div class="skeleton-card rounded-xl p-6 animate-pulse">
@@ -215,7 +184,6 @@
             </script>
         </div>
     </main>
-
 
     <!-- Suggestion Modal -->
     <div id="suggestionModal" class="fixed inset-0 z-50 items-center justify-center hidden">
@@ -245,7 +213,6 @@
         </div>
     </div>
 
-
     <!-- Back to Top Button -->
     <button id="toTopBtn" class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-pink-500/80 hover:bg-pink-600 text-white rounded-full shadow-lg hidden justify-center items-center text-xl transition-opacity duration-300">
         <i class="fa fa-arrow-up"></i>
@@ -254,7 +221,6 @@
     <!-- Footer Section -->
     <footer class="text-center py-6 mt-12">
         <p class="text-gray-200 dark:text-gray-400" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">&copy; 2024 The Ultimate Site Hub. All rights reserved.</p>
-        <!-- <button id="addDataBtn" class="mt-4 text-xs text-gray-400 hover:text-white transition">Add Initial Data to Firestore (Dev Only)</button> -->
     </footer>
 
     <script type="module">
@@ -262,7 +228,6 @@
         import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, writeBatch, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // --- PASTE YOUR FIREBASE CONFIGURATION HERE ---
         const localFirebaseConfig = {
             apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
             authDomain: "site-hub-29fb2.firebaseapp.com",
@@ -273,23 +238,18 @@
             measurementId: "G-DDEMB3X2XQ"
         };
 
-        // --- FIREBASE CONFIG (DO NOT EDIT BELOW) ---
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
 
-        // --- INITIALIZE FIREBASE ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- AUTHENTICATION ---
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    // User is signed in.
                     initializeAppLogic(user);
                 } else {
-                    // User is signed out. Sign in anonymously.
                     signInAnonymously(auth).catch((error) => {
                         console.error("Anonymous sign-in failed:", error);
                         const grid = document.getElementById('resourceGrid');
@@ -304,39 +264,7 @@
                     return;
                 }
 
-                // --- Firestore Collection Reference ---
                 const resourcesRef = collection(db, `resources`);
-                
-                // --- LOCAL DATA (For initial seeding) ---
-                const initialResources = [
-                    { name: '1Flex', url: 'https://www.1flex.ru', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'FlickyStream', url: 'https://flickystream.ru', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'RgShows', url: 'https://www.rgshows.ru/?m=m-1383072', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'Cineby', url: 'https://www.cineby.ru/', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'Cinema Deck', url: 'https://cinemadeck.com/home', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'FullHDMovies', url: 'https://fullhdmovies.me', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'NEPU', url: 'https://nepu.to', category: 'entertainment', subCategory: 'movies', votes: 0 },
-                    { name: 'Miruro', url: 'https://www.miruro.to/', category: 'entertainment', subCategory: 'anime', votes: 0 },
-                    { name: 'Enma', url: 'https://www.enma.lol', category: 'entertainment', subCategory: 'anime', votes: 0 },
-                    { name: 'Gojo', url: 'https://animetsu.bz', category: 'entertainment', subCategory: 'anime', votes: 0 },
-                    { name: 'Kaido', url: 'https://kaido.to/home', category: 'entertainment', subCategory: 'anime', votes: 0 },
-                    { name: 'Uber', url: 'https://www.uber.com/in/en/', category: 'utilities', votes: 0 },
-                    { name: 'Amazon', url: 'https://www.amazon.in/', category: 'utilities', votes: 0 },
-                    { name: 'Zomato', url: 'https://www.zomato.com/', category: 'utilities', votes: 0 },
-                    { name: 'YouTube', url: 'https://www.youtube.com/', category: 'entertainment', subCategory: 'streaming', votes: 0 },
-                    { name: 'Khan Academy', url: 'https://www.khanacademy.org/', category: 'academics', votes: 0 },
-                    { name: 'Flipkart', url: 'https://www.flipkart.com/', category: 'utilities', votes: 0 },
-                    { name: 'Notion', url: 'https://www.notion.so/', category: 'productivity', votes: 0 },
-                    { name: 'OLX', url: 'https://www.olx.in/', category: 'utilities', votes: 0 },
-                    { name: 'Grammarly', url: 'https://www.grammarly.com/', category: 'academics', votes: 0 },
-                    { name: 'Google Scholar', url: 'https://scholar.google.com/', category: 'academics', votes: 0 },
-                    { name: 'Canva', url: 'https://www.canva.com/', category: 'design', votes: 0 },
-                    { name: 'Ola Cabs', url: 'https://www.olacabs.com/', category: 'utilities', votes: 0 },
-                    { name: 'Cabmate', url: 'https://cabmatevit.netlify.app', category: 'utilities', votes: 0 },
-                    { name: 'Netflix', url: 'https://netflix.com', category: 'entertainment', subCategory: 'streaming', votes: 0 },
-                    { name: 'AI Note Taker', url: '#', category: 'student-projects', subCategory: 'Productivity', votes: 0 },
-                    { name: 'Dorm Finder', url: '#', category: 'student-projects', subCategory: 'Utility', votes: 0 },
-                ];
 
                 const categoryColors = {
                     entertainment: 'bg-purple-600',
@@ -352,7 +280,6 @@
                 let resources = [];
                 let votedItems = JSON.parse(localStorage.getItem('votedItems')) || [];
 
-                // --- ELEMENTS ---
                 const grid = document.getElementById('resourceGrid');
                 const searchInput = document.getElementById('searchInput');
                 const filterSelect = document.getElementById('filterSelect');
@@ -370,9 +297,8 @@
                 const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
                 const suggestionForm = document.getElementById('suggestionForm');
                 const suggestionResult = document.getElementById('suggestionResult');
-                const addDataBtn = document.getElementById('addDataBtn');
                 
-                // --- THEME TOGGLE LOGIC ---
+                // THEME LOGIC
                 const applyTheme = (theme) => {
                     if (theme === 'dark') {
                         document.documentElement.classList.add('dark');
@@ -394,7 +320,7 @@
                     localStorage.setItem('theme', newTheme);
                 });
 
-                // --- ANIMATION OBSERVER ---
+                // ANIMATION OBSERVER
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -403,7 +329,7 @@
                     });
                 }, { threshold: 0.1 });
                 
-                // --- VOTING ---
+                // VOTING
                 function handleVoteClick(event, id) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -413,11 +339,9 @@
                         return;
                     }
                     
-                    // Firestore update (background)
                     const resourceRef = doc(db, `resources`, id);
                     updateDoc(resourceRef, { votes: increment(1) });
 
-                    // Local state update
                     votedItems.push(id);
                     localStorage.setItem('votedItems', JSON.stringify(votedItems));
                     
@@ -426,7 +350,6 @@
                         resources[resourceIndex].votes++;
                     }
 
-                    // Instant UI update
                     const voteCountElement = document.getElementById(`vote-count-${id}`);
                     const voteButtonElement = document.getElementById(`vote-btn-${id}`);
                     
@@ -445,7 +368,7 @@
                 }
                 window.handleVoteClick = handleVoteClick;
 
-                // --- RENDERING ---
+                // RENDERING - Handles both old and new data formats
                 const renderResources = (data) => {
                     grid.innerHTML = '';
                     if (data.length === 0) {
@@ -461,11 +384,38 @@
                         const hasVoted = votedItems.includes(resource.id);
                         const voteButtonColor = hasVoted ? 'text-blue-500' : 'text-white/50';
 
+                        // Handle both old and new data formats
+                        let categories = [];
+                        let subcategories = [];
+
+                        // If new format exists, use it
+                        if (resource.categories && Array.isArray(resource.categories)) {
+                            categories = resource.categories;
+                        } else if (resource.category) {
+                            // Fall back to old format
+                            categories = [resource.category];
+                        }
+
+                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
+                            subcategories = resource.subcategories;
+                        } else if (resource.subCategory) {
+                            // Fall back to old format
+                            subcategories = [resource.subCategory];
+                        }
+
+                        // Build category badges
+                        const categoryBadges = categories.map(cat => 
+                            `<span class="text-xs font-semibold ${categoryColors[cat] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize">${cat.replace('-', ' ')}</span>`
+                        ).join('');
+
+                        const subcategoryBadges = subcategories.map(subcat => 
+                            `<span class="text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize">${subcat}</span>`
+                        ).join('');
+
                         card.innerHTML = `
                             <div class="flex justify-between items-start mb-3">
                                 <h2 class="text-xl font-bold text-white pr-2">
                                     ${resource.name}
-                                    ${resource.category === 'student-projects' ? '<i class="fas fa-graduation-cap text-yellow-400 text-sm ml-1"></i>' : ''}
                                 </h2>
                                 <div class="flex items-center gap-2 text-white font-semibold flex-shrink-0">
                                     <span id="vote-count-${resource.id}">${resource.votes || 0}</span>
@@ -475,8 +425,8 @@
                                 </div>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <span class="text-xs font-semibold ${categoryColors[resource.category] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize">${resource.category.replace('-', ' ')}</span>
-                                ${resource.subCategory ? `<span class="text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize">${resource.subCategory}</span>` : ''}
+                                ${categoryBadges}
+                                ${subcategoryBadges}
                             </div>
                         `;
                         grid.appendChild(card);
@@ -499,24 +449,57 @@
                     let scoredResources = resources.map(resource => {
                         let score = 0;
                         const name = resource.name.toLowerCase();
-                        const category = resource.category.toLowerCase().replace('-', ' ');
-                        const subCategory = resource.subCategory ? resource.subCategory.toLowerCase() : '';
+                        
+                        // Handle both old and new formats
+                        let categories = [];
+                        let subcategories = [];
+                        
+                        if (resource.categories && Array.isArray(resource.categories)) {
+                            categories = resource.categories.map(c => c.toLowerCase().replace('-', ' '));
+                        } else if (resource.category) {
+                            categories = [resource.category.toLowerCase().replace('-', ' ')];
+                        }
+
+                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
+                            subcategories = resource.subcategories.map(s => s.toLowerCase());
+                        } else if (resource.subCategory) {
+                            subcategories = [resource.subCategory.toLowerCase()];
+                        }
 
                         if (searchTerm && name.includes(searchTerm)) score = 3;
-                        else if (searchTerm && category.includes(searchTerm)) score = 2;
-                        else if (searchTerm && subCategory.includes(searchTerm)) score = 1;
+                        else if (searchTerm && categories.some(cat => cat.includes(searchTerm))) score = 2;
+                        else if (searchTerm && subcategories.some(sub => sub.includes(searchTerm))) score = 1;
 
                         return { resource, score };
                     });
 
                     let filteredResources = scoredResources.filter(item => {
                         const { resource } = item;
-                        const categoryMatch = selectedCategory === 'all' || resource.category === selectedCategory;
+                        
+                        // Handle both old and new formats
+                        let resourceCategories = [];
+                        let resourceSubcategories = [];
+                        
+                        if (resource.categories && Array.isArray(resource.categories)) {
+                            resourceCategories = resource.categories;
+                        } else if (resource.category) {
+                            resourceCategories = [resource.category];
+                        }
+
+                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
+                            resourceSubcategories = resource.subcategories;
+                        } else if (resource.subCategory) {
+                            resourceSubcategories = [resource.subCategory];
+                        }
+                        
+                        const categoryMatch = selectedCategory === 'all' || resourceCategories.includes(selectedCategory);
                         const searchMatch = searchTerm ? item.score > 0 : true;
+                        
                         let subCategoryMatch = true;
                         if (selectedCategory === 'entertainment' && selectedSubCategory !== 'all') {
-                            subCategoryMatch = resource.subCategory === selectedSubCategory;
+                            subCategoryMatch = resourceSubcategories.includes(selectedSubCategory);
                         }
+                        
                         return searchMatch && categoryMatch && subCategoryMatch;
                     })
                     .sort((a, b) => b.score - a.score || b.resource.votes - a.resource.votes)
@@ -525,7 +508,7 @@
                     renderResources(filteredResources);
                 };
                 
-                // --- DATA FETCHING ---
+                // DATA FETCHING
                 async function fetchData() {
                     const q = query(resourcesRef, orderBy('votes', 'desc'));
                     try {
@@ -539,8 +522,7 @@
                 }
                 fetchData();
 
-
-                // --- MODAL & UI EVENT LISTENERS ---
+                // EVENT LISTENERS
                 searchInput.addEventListener('input', filterAndRender);
                 filterSelect.addEventListener('change', () => {
                     subFilterContainer.classList.toggle('hidden', filterSelect.value !== 'entertainment');
@@ -611,19 +593,6 @@
                 window.addEventListener('scroll', () => toTopBtn.classList.toggle('hidden', window.scrollY <= 300));
                 toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
                 
-                // --- ONE-TIME DATA SEEDING (Dev only) ---
-                addDataBtn.addEventListener('click', async () => {
-                    console.log("Adding initial data to Firestore...");
-                    const batch = writeBatch(db);
-                    initialResources.forEach((resource) => {
-                        const docRef = doc(collection(db, `resources`));
-                        batch.set(docRef, resource);
-                    });
-                    await batch.commit();
-                    alert("Initial data has been added to Firestore!");
-                    addDataBtn.style.display = 'none';
-                    fetchData(); // Fetch data again after adding it
-                });
                 function showModal(modal) { modal.classList.replace('hidden', 'flex'); }
                 function hideModal(modal) { modal.classList.replace('flex', 'hidden'); }
             }
