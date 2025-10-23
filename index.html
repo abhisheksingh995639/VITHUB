@@ -5,15 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ultimate Hub for Useful Sites</title>
     
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -112,7 +109,6 @@
     </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DDEMB3X2XQ"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -121,22 +117,19 @@
 
   gtag('config', 'G-DDEMB3X2XQ');
 </script>
-    
+
 <body class="text-gray-800 dark:text-gray-200">
 
-    <!-- Theme Toggle Button -->
     <button id="theme-toggle" class="fixed top-6 right-6 z-50 w-12 h-12 bg-white/20 hover:bg-white/30 text-white rounded-full shadow-lg flex justify-center items-center text-xl transition-colors duration-300 backdrop-blur-sm">
         <i id="theme-toggle-dark-icon" class="fa fa-moon"></i>
         <i id="theme-toggle-light-icon" class="fa fa-sun hidden"></i>
     </button>
 
-    <!-- Header Section -->
     <header class="container mx-auto px-6 pt-12 pb-16 text-center">
         <h1 class="text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">The Ultimate Site Hub</h1>
         <p class="mt-4 text-lg text-gray-200 dark:text-gray-300 max-w-2xl mx-auto" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Your one-stop directory for learning, productivity, and everyday needs.</p>
     </header>
 
-    <!-- Controls Section -->
     <div class="container mx-auto px-6 mb-8">
         <div class="flex flex-col md:flex-row gap-4 justify-between items-center p-4 rounded-xl glass-card is-visible">
             <div class="flex flex-col sm:flex-row gap-4 w-full md:flex-grow">
@@ -164,7 +157,6 @@
         </div>
     </div>
 
-    <!-- Sub-Filter Section -->
     <div id="subFilterContainer" class="container mx-auto px-6 mb-8 hidden">
         <div class="flex flex-wrap gap-2">
             <button class="sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30" data-value="all">All</button>
@@ -174,7 +166,6 @@
         </div>
     </div>
 
-    <!-- Main Content: Website Grid -->
     <main class="container mx-auto px-6 pb-12">
         <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             <script>
@@ -196,7 +187,6 @@
         </div>
     </main>
 
-    <!-- Suggestion Modal -->
     <div id="suggestionModal" class="fixed inset-0 z-50 items-center justify-center hidden">
         <div class="modal-bg absolute inset-0"></div>
         <div class="relative w-full max-w-md p-8 m-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
@@ -224,19 +214,17 @@
         </div>
     </div>
 
-    <!-- Back to Top Button -->
     <button id="toTopBtn" class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-pink-500/80 hover:bg-pink-600 text-white rounded-full shadow-lg hidden justify-center items-center text-xl transition-opacity duration-300">
         <i class="fa fa-arrow-up"></i>
     </button>
 
-    <!-- Footer Section -->
     <footer class="text-center py-6 mt-12">
         <p class="text-gray-200 dark:text-gray-400" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">&copy; 2024 The Ultimate Site Hub. All rights reserved.</p>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, updateDoc, increment, writeBatch, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, updateDoc, increment, query, orderBy, getDocs, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const localFirebaseConfig = {
@@ -274,6 +262,8 @@
                     console.error("Initialization failed: No user found.");
                     return;
                 }
+                
+                const userUid = user.uid;
 
                 const resourcesRef = collection(db, `resources`);
 
@@ -289,7 +279,6 @@
                 };
 
                 let resources = [];
-                let votedItems = JSON.parse(localStorage.getItem('votedItems')) || [];
 
                 const grid = document.getElementById('resourceGrid');
                 const searchInput = document.getElementById('searchInput');
@@ -340,46 +329,65 @@
                     });
                 }, { threshold: 0.1 });
                 
-                // VOTING
-                function handleVoteClick(event, id) {
+                // VOTING (Secure)
+                async function handleVoteClick(event, id) {
                     event.preventDefault();
                     event.stopPropagation();
                     
-                    if (votedItems.includes(id)) {
-                        console.log("Already voted for this item.");
+                    const resourceIndex = resources.findIndex(r => r.id === id);
+                    if (resourceIndex === -1) return;
+                    
+                    const resource = resources[resourceIndex];
+                    if (resource.votedBy && resource.votedBy.includes(userUid)) {
+                        console.log("Already voted for this item (checked locally).");
                         return;
                     }
                     
                     const resourceRef = doc(db, `resources`, id);
-                    updateDoc(resourceRef, { votes: increment(1) });
-
-                    votedItems.push(id);
-                    localStorage.setItem('votedItems', JSON.stringify(votedItems));
                     
-                    const resourceIndex = resources.findIndex(r => r.id === id);
-                    if (resourceIndex > -1) {
+                    try {
+                        // Atomically increment votes and add user's UID to the 'votedBy' array
+                        await updateDoc(resourceRef, {
+                            votes: increment(1),
+                            votedBy: arrayUnion(userUid)
+                        });
+
+                        // Update local data to reflect the vote
                         resources[resourceIndex].votes++;
-                    }
-
-                    const voteCountElement = document.getElementById(`vote-count-${id}`);
-                    const voteButtonElement = document.getElementById(`vote-btn-${id}`);
-                    
-                    if (voteCountElement) {
-                        const currentVotes = parseInt(voteCountElement.innerText);
-                        voteCountElement.innerText = currentVotes + 1;
+                        if (resources[resourceIndex].votedBy) {
+                            resources[resourceIndex].votedBy.push(userUid);
+                        } else {
+                            resources[resourceIndex].votedBy = [userUid];
+                        }
                         
-                        voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
-                        setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
-                    }
-                    if (voteButtonElement) {
-                        voteButtonElement.disabled = true;
-                        voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
-                        voteButtonElement.classList.add('text-blue-500');
+                        // Update the UI
+                        const voteCountElement = document.getElementById(`vote-count-${id}`);
+                        const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+                        
+                        if (voteCountElement) {
+                            const currentVotes = parseInt(voteCountElement.innerText);
+                            voteCountElement.innerText = currentVotes + 1;
+                            
+                            voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
+                            setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
+                        }
+                        if (voteButtonElement) {
+                            voteButtonElement.disabled = true;
+                            voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
+                            voteButtonElement.classList.add('text-blue-500');
+                        }
+                    } catch (error) {
+                        console.error("Vote failed:", error.message);
+                        if (error.code === 'permission-denied') {
+                             console.log("Permission denied. You likely already voted.");
+                             const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+                             if(voteButtonElement) voteButtonElement.disabled = true;
+                        }
                     }
                 }
                 window.handleVoteClick = handleVoteClick;
 
-                // RENDERING - Handles both old and new data formats
+                // RENDERING (XSS Patched + Tabnabbing Fix)
                 const renderResources = (data) => {
                     grid.innerHTML = '';
                     if (data.length === 0) {
@@ -390,56 +398,82 @@
                         const card = document.createElement('a');
                         card.href = resource.url;
                         card.target = "_blank";
+                        card.rel = "noopener noreferrer"; // Tabnabbing fix
                         card.className = 'glass-card rounded-xl overflow-hidden p-4 block no-underline';
                         
-                        const hasVoted = votedItems.includes(resource.id);
+                        // Check the 'votedBy' array from the database for the user's UID
+                        const hasVoted = resource.votedBy && resource.votedBy.includes(userUid);
                         const voteButtonColor = hasVoted ? 'text-blue-500' : 'text-white/50';
 
                         // Handle both old and new data formats
                         let categories = [];
                         let subcategories = [];
 
-                        // If new format exists, use it
                         if (resource.categories && Array.isArray(resource.categories)) {
                             categories = resource.categories;
                         } else if (resource.category) {
-                            // Fall back to old format
                             categories = [resource.category];
                         }
 
                         if (resource.subcategories && Array.isArray(resource.subcategories)) {
                             subcategories = resource.subcategories;
                         } else if (resource.subCategory) {
-                            // Fall back to old format
                             subcategories = [resource.subCategory];
                         }
 
-                        // Build category badges
-                        const categoryBadges = categories.map(cat => 
-                            `<span class="text-xs font-semibold ${categoryColors[cat] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize">${cat.replace('-', ' ')}</span>`
-                        ).join('');
+                        // --- START XSS FIX ---
+                        const topDiv = document.createElement('div');
+                        topDiv.className = 'flex justify-between items-start mb-3';
 
-                        const subcategoryBadges = subcategories.map(subcat => 
-                            `<span class="text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize">${subcat}</span>`
-                        ).join('');
+                        const h2 = document.createElement('h2');
+                        h2.className = 'text-xl font-bold text-white pr-2';
+                        h2.textContent = resource.name;
+                        topDiv.appendChild(h2);
 
-                        card.innerHTML = `
-                            <div class="flex justify-between items-start mb-3">
-                                <h2 class="text-xl font-bold text-white pr-2">
-                                    ${resource.name}
-                                </h2>
-                                <div class="flex items-center gap-2 text-white font-semibold flex-shrink-0">
-                                    <span id="vote-count-${resource.id}">${resource.votes || 0}</span>
-                                    <button id="vote-btn-${resource.id}" onclick="handleVoteClick(event, '${resource.id}')" class="vote-btn ${voteButtonColor} hover:text-blue-400 transition" ${hasVoted ? 'disabled' : ''}>
-                                        <i class="fas fa-arrow-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex flex-wrap gap-2">
-                                ${categoryBadges}
-                                ${subcategoryBadges}
-                            </div>
-                        `;
+                        const voteDiv = document.createElement('div');
+                        voteDiv.className = 'flex items-center gap-2 text-white font-semibold flex-shrink-0';
+
+                        const voteSpan = document.createElement('span');
+                        voteSpan.id = `vote-count-${resource.id}`;
+                        voteSpan.textContent = resource.votes || 0;
+                        voteDiv.appendChild(voteSpan);
+
+                        const voteButton = document.createElement('button');
+                        voteButton.id = `vote-btn-${resource.id}`;
+                        voteButton.className = `vote-btn ${voteButtonColor} hover:text-blue-400 transition`;
+                        if (hasVoted) {
+                            voteButton.disabled = true;
+                        }
+                        voteButton.onclick = (event) => handleVoteClick(event, resource.id);
+                        
+                        const voteIcon = document.createElement('i');
+                        voteIcon.className = 'fas fa-arrow-up';
+                        voteButton.appendChild(voteIcon);
+                        voteDiv.appendChild(voteButton);
+                        
+                        topDiv.appendChild(voteDiv);
+
+                        const badgesDiv = document.createElement('div');
+                        badgesDiv.className = 'flex flex-wrap gap-2';
+
+                        categories.forEach(cat => {
+                            const badge = document.createElement('span');
+                            badge.className = `text-xs font-semibold ${categoryColors[cat] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize`;
+                            badge.textContent = cat.replace('-', ' ');
+                            badgesDiv.appendChild(badge);
+                        });
+
+                        subcategories.forEach(subcat => {
+                            const badge = document.createElement('span');
+                            badge.className = 'text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize';
+                            badge.textContent = subcat;
+                            badgesDiv.appendChild(badge);
+                        });
+
+                        card.appendChild(topDiv);
+                        card.appendChild(badgesDiv);
+                        // --- END XSS FIX ---
+
                         grid.appendChild(card);
                         observer.observe(card);
                     });
@@ -461,7 +495,6 @@
                         let score = 0;
                         const name = resource.name.toLowerCase();
                         
-                        // Handle both old and new formats
                         let categories = [];
                         let subcategories = [];
                         
@@ -487,7 +520,6 @@
                     let filteredResources = scoredResources.filter(item => {
                         const { resource } = item;
                         
-                        // Handle both old and new formats
                         let resourceCategories = [];
                         let resourceSubcategories = [];
                         
@@ -524,7 +556,7 @@
                     const q = query(resourcesRef, orderBy('votes', 'desc'));
                     try {
                         const snapshot = await getDocs(q);
-                        resources = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        resources = snapshot.docs.map(doc => ({ id: doc.id, votedBy: [], ...doc.data() }));
                         filterAndRender();
                     } catch (error) {
                         console.error("Error fetching data from Firestore: ", error);
