@@ -1,4 +1,4 @@
-# VSH - The Ultimate Site Hub
+# VSH - VIT Site Hub
 
 A beautiful, glassmorphic web directory for organizing and sharing your favorite websites and resources. Features user voting, category filtering, and an admin panel for resource management.
 
