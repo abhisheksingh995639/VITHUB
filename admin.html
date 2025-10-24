@@ -28,7 +28,7 @@
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1554034483-04fda0d3507b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80');
+            background-image: url('https://images.unsplash.com/photo-1554034483-04fda0d3507b?ixlib=rb-4.0.3&ixid=MnwxMjA_fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -88,6 +88,11 @@
             outline: none;
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
         }
+        /* Style for glass select dropdown */
+        .glass-input option {
+            background: #374151;
+            color: #f3f4f6;
+        }
 
     </style>
 </head>
@@ -145,6 +150,7 @@
                 <i class="fas fa-plus-circle text-green-300"></i> Add New Resource
             </h2>
             <form id="addResourceForm" class="space-y-4">
+                <input type="hidden" id="suggestionId">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-100 mb-2">Site Name *</label>
@@ -200,7 +206,7 @@
                     <p class="text-xs text-gray-200 mt-1">Optional: Add specific subcategories for better filtering</p>
                 </div>
 
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg disabled:opacity-50">
                     <i class="fas fa-plus"></i> Add Resource
                 </button>
             </form>
@@ -211,8 +217,19 @@
             <h2 class="text-2xl font-bold text-white mb-6">
                 <i class="fas fa-list text-blue-300"></i> Existing Resources
             </h2>
-            <div class="mb-4">
-                <input type="text" id="searchResources" placeholder="Search resources..." class="w-full glass-input">
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <input type="text" id="searchResources" placeholder="Search by name, URL, category..." class="w-full glass-input">
+                <select id="filterResources" class="w-full md:w-auto glass-input">
+                    <option value="all">All Categories</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="academics">Academics</option>
+                    <option value="notes">Notes & PYQs</option>
+                    <option value="productivity">Productivity</option>
+                    <option value="coding">Coding & Dev</option>
+                    <option value="design">Design</option>
+                    <option value="utilities">Utilities</option>
+                    <option value="student-projects">Student Projects</option>
+                </select>
             </div>
             <div id="resourcesList" class="space-y-3">
                 <div class="text-center py-8 text-gray-100">
@@ -295,7 +312,7 @@
                         <button type="button" id="cancelEdit" class="modal-button-cancel px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition">
                             Cancel
                         </button>
-                        <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition font-semibold">
+                        <button type="submit" class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition font-semibold disabled:opacity-50">
                             <i class="fas fa-save"></i> Save Changes
                         </button>
                     </div>
@@ -332,7 +349,6 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        // --- UPDATED: Added serverTimestamp ---
         import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -363,13 +379,16 @@
         const logoutButton = document.getElementById('logoutButton');
         const toTopBtn = document.getElementById('toTopBtn'); 
         
-        // --- NEW: Confirm Modal elements ---
         const confirmModal = document.getElementById('confirmModal');
         const confirmModalText = document.getElementById('confirmModalText');
         const confirmCancelBtn = document.getElementById('confirmCancel');
         const confirmDeleteBtn = document.getElementById('confirmDelete');
         let deleteIdToConfirm = null;
-        let suggestionDeleteIdToConfirm = null; // For suggestions
+        let suggestionDeleteIdToConfirm = null;
+
+        // --- NEW: Selectors for new filter/search
+        const searchInput = document.getElementById('searchResources');
+        const filterSelect = document.getElementById('filterResources');
 
         // Check auth state
         onAuthStateChanged(auth, (user) => {
@@ -378,7 +397,7 @@
                 adminContent.classList.remove('hidden');
                 authStatus.innerHTML = `<span class="text-green-300"><i class="fas fa-check-circle"></i> Authenticated as Admin: ${user.email}</span>`;
                 loadResources();
-                loadSuggestions(); // --- NEW: Load suggestions on login
+                loadSuggestions(); 
             } else {
                 loginSection.classList.remove('hidden');
                 adminContent.classList.add('hidden');
@@ -408,15 +427,17 @@
             signOut(auth);
         });
 
-        // Add new resource
+        // --- UPDATED: Add new resource (with race condition fix) ---
         document.getElementById('addResourceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const submitButton = e.target.querySelector('button[type="submit"]');
             const name = document.getElementById('newName').value;
             const url = document.getElementById('newUrl').value;
             const categories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(cb => cb.value);
             const subcategoriesInput = document.getElementById('newSubcategories').value;
             const subcategories = subcategoriesInput ? subcategoriesInput.split(',').map(s => s.trim()).filter(s => s) : [];
+            const suggestionId = document.getElementById('suggestionId').value; // --- NEW: Get suggestion ID
             
             if (categories.length === 0) {
                 showMessage('addResult', 'Please select at least one category', 'error');
@@ -425,6 +446,7 @@
 
             const resultEl = document.getElementById('addResult');
             resultEl.innerHTML = '<span class="text-blue-300"><i class="fas fa-spinner fa-spin"></i> Adding resource...</span>';
+            submitButton.disabled = true; // --- FIX: Disable button ---
 
             try {
                 await addDoc(collection(db, 'resources'), {
@@ -434,15 +456,24 @@
                     subcategories,
                     votes: 0,
                     votedBy: [],
-                    createdAt: serverTimestamp() // --- NEW: Add timestamp
+                    createdAt: serverTimestamp() 
                 });
 
+                // --- NEW: If this was from a suggestion, delete the suggestion ---
+                if (suggestionId) {
+                    await deleteDoc(doc(db, 'suggestions', suggestionId));
+                    loadSuggestions(); // Reload suggestions
+                    document.getElementById('suggestionId').value = ''; // Clear the ID
+                }
+
                 showMessage('addResult', 'Resource added successfully!', 'success');
-                document.getElementById('addResourceForm').reset();
+                e.target.reset();
                 document.querySelectorAll('.category-checkbox').forEach(cb => cb.checked = false);
                 loadResources();
             } catch (error) {
                 showMessage('addResult', `Error: ${error.message}`, 'error');
+            } finally {
+                submitButton.disabled = false; // --- FIX: Re-enable button ---
             }
         });
 
@@ -455,7 +486,7 @@
                 const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
                 const snapshot = await getDocs(q);
                 allResources = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                displayResources(allResources);
+                filterAndSearchResources(); // --- UPDATED: Use new filter function
             } catch (error) {
                  const errorDiv = document.createElement('div');
                  errorDiv.className = 'text-center py-8 text-red-300';
@@ -465,7 +496,7 @@
             }
         }
 
-        // --- UPDATED: displayResources (uses data-attributes, not onclick) ---
+        // --- UPDATED: displayResources (shows date) ---
         function displayResources(resources) {
             const list = document.getElementById('resourcesList');
             list.innerHTML = ''; 
@@ -499,6 +530,14 @@
                 link.className = 'text-sm text-blue-300 hover:underline break-all';
                 link.textContent = resource.url; 
                 infoDiv.appendChild(link);
+                
+                // --- NEW: Display creation date ---
+                if (resource.createdAt && resource.createdAt.toDate) {
+                    const dateP = document.createElement('p');
+                    dateP.className = 'text-xs text-gray-300 mt-1';
+                    dateP.textContent = `Added: ${resource.createdAt.toDate().toLocaleDateString()}`;
+                    infoDiv.appendChild(dateP);
+                }
 
                 topDiv.appendChild(infoDiv);
 
@@ -545,7 +584,7 @@
 
                 const editButton = document.createElement('button');
                 editButton.className = 'edit-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition';
-                editButton.dataset.id = resource.id; // Set data-id
+                editButton.dataset.id = resource.id;
                 
                 const editIcon = document.createElement('i');
                 editIcon.className = 'fas fa-edit';
@@ -556,8 +595,8 @@
 
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition';
-                deleteButton.dataset.id = resource.id; // Set data-id
-                deleteButton.dataset.name = resource.name; // Set data-name
+                deleteButton.dataset.id = resource.id;
+                deleteButton.dataset.name = resource.name;
                 
                 const deleteIcon = document.createElement('i');
                 deleteIcon.className = 'fas fa-trash';
@@ -571,7 +610,7 @@
             });
         }
 
-        // --- NEW: Event Delegation for resource list ---
+        // Event Delegation for resource list
         document.getElementById('resourcesList').addEventListener('click', (e) => {
             const target = e.target.closest('button');
             if (!target) return;
@@ -585,17 +624,37 @@
             }
         });
 
-        // Search resources
-        document.getElementById('searchResources').addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = allResources.filter(r => 
-                r.name.toLowerCase().includes(searchTerm) || 
-                r.url.toLowerCase().includes(searchTerm)
-            );
-            displayResources(filtered);
-        });
+        // --- NEW: Combined filter and search function ---
+        function filterAndSearchResources() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = filterSelect.value;
 
-        // Edit resource (no change, just called by delegation)
+            const filtered = allResources.filter(r => {
+                const categories = (r.categories || []).map(c => c.toLowerCase());
+                const subcategories = (r.subcategories || []).map(s => s.toLowerCase());
+
+                // Search logic
+                const nameMatch = r.name.toLowerCase().includes(searchTerm);
+                const urlMatch = r.url.toLowerCase().includes(searchTerm);
+                const catMatch = categories.some(c => c.includes(searchTerm));
+                const subCatMatch = subcategories.some(s => s.includes(searchTerm));
+                
+                const searchMatch = !searchTerm || nameMatch || urlMatch || catMatch || subCatMatch;
+                
+                // Filter logic
+                const categoryFilterMatch = selectedCategory === 'all' || categories.includes(selectedCategory);
+
+                return searchMatch && categoryFilterMatch;
+            });
+            
+            displayResources(filtered);
+        }
+
+        // --- NEW: Add event listeners for new controls ---
+        searchInput.addEventListener('input', filterAndSearchResources);
+        filterSelect.addEventListener('change', filterAndSearchResources);
+
+        // Edit resource
         window.editResource = (id) => {
             const resource = allResources.find(r => r.id === id);
             if (!resource) return;
@@ -616,10 +675,11 @@
             document.getElementById('editModal').classList.remove('hidden');
         };
 
-        // Save edited resource
+        // --- UPDATED: Save edited resource (with race condition fix) ---
         document.getElementById('editResourceForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            const submitButton = e.target.querySelector('button[type="submit"]');
             const id = document.getElementById('editId').value;
             const name = document.getElementById('editName').value;
             const url = document.getElementById('editUrl').value;
@@ -635,6 +695,7 @@
 
             const resultEl = document.getElementById('editResult');
             resultEl.innerHTML = '<span class="text-blue-600"><i class="fas fa-spinner fa-spin"></i> Saving...</span>';
+            submitButton.disabled = true; // --- FIX: Disable button ---
 
             try {
                 await updateDoc(doc(db, 'resources', id), {
@@ -652,18 +713,20 @@
                 }, 1500);
             } catch (error) {
                 showMessage('editResult', `Error: ${error.message}`, 'error');
+            } finally {
+                submitButton.disabled = false; // --- FIX: Re-enable button ---
             }
         });
 
-        // --- UPDATED: deleteResource (shows modal) ---
+        // Delete resource
         window.deleteResource = (id, name) => {
             deleteIdToConfirm = id;
-            suggestionDeleteIdToConfirm = null; // Ensure we're not deleting a suggestion
+            suggestionDeleteIdToConfirm = null; 
             confirmModalText.textContent = `Are you sure you want to delete the resource "${name}"?`;
             confirmModal.classList.remove('hidden');
         };
 
-        // --- NEW: Functions for Suggestion Queue ---
+        // --- Functions for Suggestion Queue ---
         async function loadSuggestions() {
             const list = document.getElementById('suggestionsList');
             list.innerHTML = '<p class="text-gray-100">Loading suggestions...</p>';
@@ -724,41 +787,29 @@
             }
         }
         
-        window.approveSuggestion = async (id, suggestionData) => {
-            if (!confirm(`Approve "${suggestionData.name}"? This will add it to the main list.`)) return;
-
-            try {
-                // 1. Add to main 'resources' collection
-                await addDoc(collection(db, 'resources'), {
-                    name: suggestionData.name,
-                    url: suggestionData.url,
-                    categories: [], // Admin must edit this later
-                    subcategories: [], // Admin must edit this later
-                    votes: 0,
-                    votedBy: [],
-                    createdAt: serverTimestamp()
-                });
-
-                // 2. Delete from 'suggestions' collection
-                await deleteDoc(doc(db, 'suggestions', id));
-                
-                loadResources();
-                loadSuggestions();
-
-            } catch (error) {
-                alert(`Error approving: ${error.message}`);
-            }
+        // --- UPDATED: approveSuggestion (pre-fills form) ---
+        window.approveSuggestion = (id, suggestionData) => {
+            document.getElementById('newName').value = suggestionData.name;
+            document.getElementById('newUrl').value = suggestionData.url;
+            document.getElementById('suggestionId').value = id; // Store the ID
+            
+            // Show a message near the form
+            const resultEl = document.getElementById('addResult');
+            showMessage('addResult', 'Suggestion populated. Please add categories and save.', 'success');
+            
+            // Scroll to the form
+            document.getElementById('addResourceForm').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('newName').focus(); // Focus the first field
         };
 
         window.rejectSuggestion = (id, name) => {
             suggestionDeleteIdToConfirm = id;
-            deleteIdToConfirm = null; // Ensure we're not deleting a resource
+            deleteIdToConfirm = null; 
             confirmModalText.textContent = `Are you sure you want to REJECT the suggestion "${name}"?`;
             confirmModal.classList.remove('hidden');
         };
-        // --- End of Suggestion Functions ---
 
-        // --- NEW: Handle Confirm Modal Logic ---
+        // Handle Confirm Modal Logic
         async function S_HandleDeleteConfirm() {
             try {
                 if (deleteIdToConfirm) {
@@ -798,6 +849,7 @@
             document.getElementById('editResult').innerHTML = '';
         });
 
+Storage
         document.getElementById('editModal').addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-bg')) {
                 document.getElementById('editModal').classList.add('hidden');
@@ -831,7 +883,10 @@
             span.appendChild(document.createTextNode(` ${message}`));
             el.appendChild(span);
             
-            if (elementId.includes('Result')) {
+            // --- UPDATED: Clear 'addResult' message faster, but not other messages ---
+            if (elementId === 'addResult') {
+                 setTimeout(() => el.innerHTML = '', 4000); // Give more time to read the 'populated' message
+            } else if (elementId.includes('Result')) {
                  setTimeout(() => el.innerHTML = '', 3000);
             }
         }
