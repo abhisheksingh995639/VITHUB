@@ -52,7 +52,7 @@
         }
 
         /* Modal styles for light mode */
-        #editModal > div:last-child {
+        #editModal > div:last-child, #confirmModal > div:last-child {
             background-color: #ffffff;
             color: #1f2937;
         }
@@ -130,7 +130,16 @@
             </div>
             <div id="authStatus" class="mt-4 text-sm"></div>
         </div>
-
+        
+        <div class="glass-card rounded-2xl shadow-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold text-white mb-6">
+                <i class="fas fa-inbox text-yellow-300"></i> Pending Suggestions
+            </h2>
+            <div id="suggestionsList" class="space-y-3">
+                <p class="text-gray-100">Loading suggestions...</p>
+            </div>
+        </div>
+        
         <div class="glass-card rounded-2xl shadow-xl p-6 mb-8">
             <h2 class="text-2xl font-bold text-white mb-6">
                 <i class="fas fa-plus-circle text-green-300"></i> Add New Resource
@@ -296,6 +305,26 @@
         </div>
     </div>
 
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+        <div class="modal-bg absolute inset-0"></div>
+        <div class="relative w-full max-w-md m-4 bg-white rounded-2xl shadow-2xl">
+            <div class="p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600"></i> Are you sure?
+                </h2>
+                <p id="confirmModalText" class="text-gray-600 mb-6">Do you really want to delete this resource?</p>
+                <div class="flex justify-end gap-4">
+                    <button id="confirmCancel" class="modal-button-cancel px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition">
+                        Cancel
+                    </button>
+                    <button id="confirmDelete" class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition font-semibold">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <button id="toTopBtn" class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-pink-500/80 hover:bg-pink-600 text-white rounded-full shadow-lg hidden justify-center items-center text-xl transition-opacity duration-300">
         <i class="fa fa-arrow-up"></i>
     </button>
@@ -303,12 +332,14 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // --- UPDATED: Added serverTimestamp ---
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // --- ADMIN UID IS SET ---
         const ADMIN_UID = "EfrLdANmbfVNMrErRNsWArYNa3N2"; 
 
+        // IMPORTANT: Replace this with your actual Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
             authDomain: "site-hub-29fb2.firebaseapp.com",
@@ -331,6 +362,14 @@
         const loginForm = document.getElementById('loginForm');
         const logoutButton = document.getElementById('logoutButton');
         const toTopBtn = document.getElementById('toTopBtn'); 
+        
+        // --- NEW: Confirm Modal elements ---
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmModalText = document.getElementById('confirmModalText');
+        const confirmCancelBtn = document.getElementById('confirmCancel');
+        const confirmDeleteBtn = document.getElementById('confirmDelete');
+        let deleteIdToConfirm = null;
+        let suggestionDeleteIdToConfirm = null; // For suggestions
 
         // Check auth state
         onAuthStateChanged(auth, (user) => {
@@ -339,6 +378,7 @@
                 adminContent.classList.remove('hidden');
                 authStatus.innerHTML = `<span class="text-green-300"><i class="fas fa-check-circle"></i> Authenticated as Admin: ${user.email}</span>`;
                 loadResources();
+                loadSuggestions(); // --- NEW: Load suggestions on login
             } else {
                 loginSection.classList.remove('hidden');
                 adminContent.classList.add('hidden');
@@ -384,7 +424,7 @@
             }
 
             const resultEl = document.getElementById('addResult');
-            resultEl.innerHTML = '<span class="text-blue-300"><i class="fas fa-spinner fa-spin"></i> Adding resource...</span>'; // Use innerHTML safely for static icon
+            resultEl.innerHTML = '<span class="text-blue-300"><i class="fas fa-spinner fa-spin"></i> Adding resource...</span>';
 
             try {
                 await addDoc(collection(db, 'resources'), {
@@ -393,7 +433,8 @@
                     categories,
                     subcategories,
                     votes: 0,
-                    votedBy: [] 
+                    votedBy: [],
+                    createdAt: serverTimestamp() // --- NEW: Add timestamp
                 });
 
                 showMessage('addResult', 'Resource added successfully!', 'success');
@@ -408,7 +449,7 @@
         // Load resources
         async function loadResources() {
             const list = document.getElementById('resourcesList');
-            list.innerHTML = '<div class="text-center py-8 text-gray-100"><i class="fas fa-spinner fa-spin text-3xl mb-2"></i><p>Loading...</p></div>'; // Use innerHTML safely for static icon
+            list.innerHTML = '<div class="text-center py-8 text-gray-100"><i class="fas fa-spinner fa-spin text-3xl mb-2"></i><p>Loading...</p></div>';
 
             try {
                 const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
@@ -419,16 +460,15 @@
                  const errorDiv = document.createElement('div');
                  errorDiv.className = 'text-center py-8 text-red-300';
                  errorDiv.textContent = `Error loading resources: ${error.message}`;
-                 list.innerHTML = ''; // Clear loading indicator
+                 list.innerHTML = '';
                  list.appendChild(errorDiv);
             }
         }
 
-        // --- XSS FIX START: displayResources ---
-        // Display resources safely using createElement and textContent
+        // --- UPDATED: displayResources (uses data-attributes, not onclick) ---
         function displayResources(resources) {
             const list = document.getElementById('resourcesList');
-            list.innerHTML = ''; // Clear previous content
+            list.innerHTML = ''; 
 
             if (resources.length === 0) {
                 const noDataDiv = document.createElement('div');
@@ -450,14 +490,14 @@
 
                 const h3 = document.createElement('h3');
                 h3.className = 'font-bold text-lg text-white';
-                h3.textContent = resource.name; // Safe
+                h3.textContent = resource.name;
                 infoDiv.appendChild(h3);
 
                 const link = document.createElement('a');
                 link.href = resource.url;
                 link.target = '_blank';
                 link.className = 'text-sm text-blue-300 hover:underline break-all';
-                link.textContent = resource.url; // Safe
+                link.textContent = resource.url; 
                 infoDiv.appendChild(link);
 
                 topDiv.appendChild(infoDiv);
@@ -471,7 +511,7 @@
                 const voteIcon = document.createElement('i');
                 voteIcon.className = 'fas fa-arrow-up';
                 voteSpan.appendChild(voteIcon);
-                voteSpan.appendChild(document.createTextNode(` ${resource.votes || 0}`)); // Safe
+                voteSpan.appendChild(document.createTextNode(` ${resource.votes || 0}`));
                 
                 votesDiv.appendChild(voteSpan);
                 topDiv.appendChild(votesDiv);
@@ -487,14 +527,14 @@
                 categories.forEach(cat => {
                     const badge = document.createElement('span');
                     badge.className = 'bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs font-semibold';
-                    badge.textContent = cat; // Safe
+                    badge.textContent = cat;
                     badgesDiv.appendChild(badge);
                 });
 
                 subcategories.forEach(sub => {
                     const badge = document.createElement('span');
                     badge.className = 'bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs';
-                    badge.textContent = sub; // Safe
+                    badge.textContent = sub;
                     badgesDiv.appendChild(badge);
                 });
 
@@ -504,8 +544,8 @@
                 buttonsDiv.className = 'flex gap-2';
 
                 const editButton = document.createElement('button');
-                editButton.className = 'bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition';
-                editButton.onclick = () => editResource(resource.id);
+                editButton.className = 'edit-btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition';
+                editButton.dataset.id = resource.id; // Set data-id
                 
                 const editIcon = document.createElement('i');
                 editIcon.className = 'fas fa-edit';
@@ -515,9 +555,10 @@
                 buttonsDiv.appendChild(editButton);
 
                 const deleteButton = document.createElement('button');
-                deleteButton.className = 'bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition';
-                deleteButton.onclick = () => deleteResource(resource.id, resource.name);
-
+                deleteButton.className = 'delete-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-sm transition';
+                deleteButton.dataset.id = resource.id; // Set data-id
+                deleteButton.dataset.name = resource.name; // Set data-name
+                
                 const deleteIcon = document.createElement('i');
                 deleteIcon.className = 'fas fa-trash';
                 deleteButton.appendChild(deleteIcon);
@@ -529,7 +570,20 @@
                 list.appendChild(card);
             });
         }
-        // --- XSS FIX END: displayResources ---
+
+        // --- NEW: Event Delegation for resource list ---
+        document.getElementById('resourcesList').addEventListener('click', (e) => {
+            const target = e.target.closest('button');
+            if (!target) return;
+
+            if (target.classList.contains('edit-btn')) {
+                editResource(target.dataset.id);
+            }
+
+            if (target.classList.contains('delete-btn')) {
+                deleteResource(target.dataset.id, target.dataset.name);
+            }
+        });
 
         // Search resources
         document.getElementById('searchResources').addEventListener('input', (e) => {
@@ -541,7 +595,7 @@
             displayResources(filtered);
         });
 
-        // Edit resource
+        // Edit resource (no change, just called by delegation)
         window.editResource = (id) => {
             const resource = allResources.find(r => r.id === id);
             if (!resource) return;
@@ -580,7 +634,7 @@
             }
 
             const resultEl = document.getElementById('editResult');
-            resultEl.innerHTML = '<span class="text-blue-600"><i class="fas fa-spinner fa-spin"></i> Saving...</span>'; // Use innerHTML safely for static icon
+            resultEl.innerHTML = '<span class="text-blue-600"><i class="fas fa-spinner fa-spin"></i> Saving...</span>';
 
             try {
                 await updateDoc(doc(db, 'resources', id), {
@@ -601,19 +655,144 @@
             }
         });
 
-        // Delete resource
-        window.deleteResource = async (id, name) => {
-            if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+        // --- UPDATED: deleteResource (shows modal) ---
+        window.deleteResource = (id, name) => {
+            deleteIdToConfirm = id;
+            suggestionDeleteIdToConfirm = null; // Ensure we're not deleting a suggestion
+            confirmModalText.textContent = `Are you sure you want to delete the resource "${name}"?`;
+            confirmModal.classList.remove('hidden');
+        };
+
+        // --- NEW: Functions for Suggestion Queue ---
+        async function loadSuggestions() {
+            const list = document.getElementById('suggestionsList');
+            list.innerHTML = '<p class="text-gray-100">Loading suggestions...</p>';
+            
+            try {
+                const q = query(collection(db, 'suggestions'), orderBy('submittedAt', 'desc'));
+                const snapshot = await getDocs(q);
+                
+                if (snapshot.empty) {
+                    list.innerHTML = '<p class="text-gray-100">No pending suggestions.</p>';
+                    return;
+                }
+
+                list.innerHTML = ''; // Clear loading
+                snapshot.docs.forEach(suggestionDoc => {
+                    const suggestion = suggestionDoc.data();
+                    const card = document.createElement('div');
+                    card.className = 'glass-card rounded-xl p-4';
+                    
+                    const name = document.createElement('h3');
+                    name.className = 'font-bold text-lg text-white';
+                    name.textContent = suggestion.name;
+                    card.appendChild(name);
+                    
+                    const url = document.createElement('a');
+                    url.href = suggestion.url;
+                    url.target = '_blank';
+                    url.className = 'text-sm text-blue-300 hover:underline break-all';
+                    url.textContent = suggestion.url;
+                    card.appendChild(url);
+                    
+                    const reason = document.createElement('p');
+                    reason.className = 'text-sm text-gray-200 mt-2';
+                    reason.textContent = `Reason: ${suggestion.reason || 'N/A'}`;
+                    card.appendChild(reason);
+                    
+                    const buttonsDiv = document.createElement('div');
+                    buttonsDiv.className = 'flex gap-2 mt-3';
+                    
+                    const approveBtn = document.createElement('button');
+                    approveBtn.className = 'bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition';
+                    approveBtn.innerHTML = '<i class="fas fa-check"></i> Approve';
+                    approveBtn.onclick = () => approveSuggestion(suggestionDoc.id, suggestion);
+                    buttonsDiv.appendChild(approveBtn);
+                    
+                    const rejectBtn = document.createElement('button');
+                    rejectBtn.className = 'bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition';
+                    rejectBtn.innerHTML = '<i class="fas fa-times"></i> Reject';
+                    rejectBtn.onclick = () => rejectSuggestion(suggestionDoc.id, suggestion.name);
+                    buttonsDiv.appendChild(rejectBtn);
+                    
+                    card.appendChild(buttonsDiv);
+                    list.appendChild(card);
+                });
+
+            } catch (error) {
+                list.innerHTML = `<p class="text-red-300">Error loading suggestions: ${error.message}</p>`;
+            }
+        }
+        
+        window.approveSuggestion = async (id, suggestionData) => {
+            if (!confirm(`Approve "${suggestionData.name}"? This will add it to the main list.`)) return;
 
             try {
-                await deleteDoc(doc(db, 'resources', id));
+                // 1. Add to main 'resources' collection
+                await addDoc(collection(db, 'resources'), {
+                    name: suggestionData.name,
+                    url: suggestionData.url,
+                    categories: [], // Admin must edit this later
+                    subcategories: [], // Admin must edit this later
+                    votes: 0,
+                    votedBy: [],
+                    createdAt: serverTimestamp()
+                });
+
+                // 2. Delete from 'suggestions' collection
+                await deleteDoc(doc(db, 'suggestions', id));
+                
                 loadResources();
+                loadSuggestions();
+
             } catch (error) {
-                alert(`Error deleting resource: ${error.message}`);
+                alert(`Error approving: ${error.message}`);
             }
         };
 
-        // Modal controls
+        window.rejectSuggestion = (id, name) => {
+            suggestionDeleteIdToConfirm = id;
+            deleteIdToConfirm = null; // Ensure we're not deleting a resource
+            confirmModalText.textContent = `Are you sure you want to REJECT the suggestion "${name}"?`;
+            confirmModal.classList.remove('hidden');
+        };
+        // --- End of Suggestion Functions ---
+
+        // --- NEW: Handle Confirm Modal Logic ---
+        async function S_HandleDeleteConfirm() {
+            try {
+                if (deleteIdToConfirm) {
+                    await deleteDoc(doc(db, 'resources', deleteIdToConfirm));
+                    loadResources();
+                } else if (suggestionDeleteIdToConfirm) {
+                    await deleteDoc(doc(db, 'suggestions', suggestionDeleteIdToConfirm));
+                    loadSuggestions();
+                }
+            } catch (error) {
+                alert(`Error deleting: ${error.message}`);
+            } finally {
+                deleteIdToConfirm = null;
+                suggestionDeleteIdToConfirm = null;
+                confirmModal.classList.add('hidden');
+            }
+        }
+        
+        confirmDeleteBtn.addEventListener('click', S_HandleDeleteConfirm);
+        
+        function S_HandleCancel() {
+            deleteIdToConfirm = null;
+            suggestionDeleteIdToConfirm = null;
+            confirmModal.classList.add('hidden');
+        }
+        
+        confirmCancelBtn.addEventListener('click', S_HandleCancel);
+        confirmModal.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-bg')) {
+                S_HandleCancel();
+            }
+        });
+
+        // Modal controls (for Edit Modal)
         document.getElementById('cancelEdit').addEventListener('click', () => {
             document.getElementById('editModal').classList.add('hidden');
             document.getElementById('editResult').innerHTML = '';
@@ -626,24 +805,21 @@
             }
         });
 
-        // --- Back to Top Button Logic ---
+        // Back to Top Button Logic
         window.addEventListener('scroll', () => toTopBtn.classList.toggle('hidden', window.scrollY <= 300));
         toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        // --- XSS FIX START: showMessage ---
         // Helper function using textContent
         function showMessage(elementId, message, type) {
             const el = document.getElementById(elementId);
-            el.innerHTML = ''; // Clear previous content
+            el.innerHTML = '';
 
             const span = document.createElement('span');
             let colorClass = '';
 
             if (elementId === 'loginResult' || elementId === 'addResult') {
-                // On glass background
                 colorClass = type === 'success' ? 'text-green-300' : 'text-red-300';
             } else {
-                // In solid modal
                 colorClass = type === 'success' ? 'text-green-600' : 'text-red-600';
             }
             span.className = colorClass;
@@ -652,15 +828,13 @@
             icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
             span.appendChild(icon);
             
-            span.appendChild(document.createTextNode(` ${message}`)); // Safe: Use textContent for the message
+            span.appendChild(document.createTextNode(` ${message}`));
             el.appendChild(span);
             
-            // Auto-clear message after 3 seconds
             if (elementId.includes('Result')) {
                  setTimeout(() => el.innerHTML = '', 3000);
             }
         }
-        // --- XSS FIX END: showMessage ---
 
     </script>
 </body>
