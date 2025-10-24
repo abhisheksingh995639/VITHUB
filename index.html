@@ -237,35 +237,107 @@
             measurementId: "G-DDEMB3X2XQ"
         };
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
-
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         
         document.addEventListener('DOMContentLoaded', () => {
-            
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     initializeAppLogic(user);
                 } else {
                     signInAnonymously(auth).catch((error) => {
                         console.error("Anonymous sign-in failed:", error);
-                        const grid = document.getElementById('resourceGrid');
-                        grid.innerHTML = `<p class="text-center text-red-400 col-span-full is-visible">Authentication Failed. Please check your Firebase setup and security rules.</p>`;
+                        document.getElementById('resourceGrid').innerHTML = 
+                            `<p class="text-center text-red-400 col-span-full is-visible">Authentication Failed. Please check your Firebase setup and security rules.</p>`;
                     });
                 }
             });
 
             function initializeAppLogic(user) {
-                if (!user) {
-                    console.error("Initialization failed: No user found.");
-                    return;
-                }
+                if (!user) return console.error("Initialization failed: No user found.");
                 
                 const userUid = user.uid;
+                let resources = [];
+                let activeSubCategory = 'all';
 
-                const resourcesRef = collection(db, `resources`);
+                const grid = document.getElementById('resourceGrid');
+                const searchInput = document.getElementById('searchInput');
+                const filterSelect = document.getElementById('filterSelect');
+                const subFilterContainer = document.getElementById('subFilterContainer');
+                const subFilterButtons = document.querySelectorAll('.sub-filter-btn');
+                const toTopBtn = document.getElementById('toTopBtn');
+                const themeToggleBtn = document.getElementById('theme-toggle');
+                const darkIcon = document.getElementById('theme-toggle-dark-icon');
+                const lightIcon = document.getElementById('theme-toggle-light-icon');
+                const suggestionModal = document.getElementById('suggestionModal');
+                const suggestResourceBtn = document.getElementById('suggestResourceBtn');
+                const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
+                const suggestionForm = document.getElementById('suggestionForm');
+                
+                const applyTheme = (theme) => {
+                    document.documentElement.classList.toggle('dark', theme === 'dark');
+                    darkIcon.classList.toggle('hidden', theme === 'dark');
+                    lightIcon.classList.toggle('hidden', theme !== 'dark');
+                };
+
+                applyTheme(localStorage.getItem('theme') || 'light');
+
+                themeToggleBtn.addEventListener('click', () => {
+                    const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+                    applyTheme(newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => entry.isIntersecting && entry.target.classList.add('is-visible'));
+                }, { threshold: 0.1 });
+                
+                async function handleVoteClick(event, id) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    const resourceIndex = resources.findIndex(r => r.id === id);
+                    if (resourceIndex === -1) return;
+                    
+                    const resource = resources[resourceIndex];
+                    if (resource.votedBy?.includes(userUid)) return;
+                    
+                    try {
+                        await updateDoc(doc(db, 'resources', id), {
+                            votes: increment(1),
+                            votedBy: arrayUnion(userUid)
+                        });
+
+                        resources[resourceIndex].votes++;
+                        resources[resourceIndex].votedBy = [...(resources[resourceIndex].votedBy || []), userUid];
+                        
+                        const voteCountElement = document.getElementById(`vote-count-${id}`);
+                        const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+                        
+                        if (voteCountElement) {
+                            voteCountElement.innerText = parseInt(voteCountElement.innerText) + 1;
+                            voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
+                            setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
+                        }
+                        if (voteButtonElement) {
+                            voteButtonElement.disabled = true;
+                            voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
+                            voteButtonElement.classList.add('text-blue-500');
+                        }
+                    } catch (error) {
+                        console.error("Vote failed:", error.message);
+                        const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+                        if (voteButtonElement) voteButtonElement.disabled = true;
+                    }
+                }
+                window.handleVoteClick = handleVoteClick;
+
+                const normalizeData = (resource) => {
+                    const categories = resource.categories || (resource.category ? [resource.category] : []);
+                    const subcategories = resource.subcategories || (resource.subCategory ? [resource.subCategory] : []);
+                    return { categories, subcategories };
+                };
 
                 const categoryColors = {
                     entertainment: 'bg-purple-600',
@@ -278,150 +350,20 @@
                     'student-projects': 'bg-yellow-500',
                 };
 
-                let resources = [];
-
-                const grid = document.getElementById('resourceGrid');
-                const searchInput = document.getElementById('searchInput');
-                const filterSelect = document.getElementById('filterSelect');
-                const subFilterContainer = document.getElementById('subFilterContainer');
-                const subFilterButtons = document.querySelectorAll('.sub-filter-btn');
-                let activeSubCategory = 'all';
-
-                const toTopBtn = document.getElementById('toTopBtn');
-                const themeToggleBtn = document.getElementById('theme-toggle');
-                const darkIcon = document.getElementById('theme-toggle-dark-icon');
-                const lightIcon = document.getElementById('theme-toggle-light-icon');
-                
-                const suggestionModal = document.getElementById('suggestionModal');
-                const suggestResourceBtn = document.getElementById('suggestResourceBtn');
-                const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
-                const suggestionForm = document.getElementById('suggestionForm');
-                const suggestionResult = document.getElementById('suggestionResult');
-                
-                // THEME LOGIC
-                const applyTheme = (theme) => {
-                    if (theme === 'dark') {
-                        document.documentElement.classList.add('dark');
-                        darkIcon.classList.add('hidden');
-                        lightIcon.classList.remove('hidden');
-                    } else {
-                        document.documentElement.classList.remove('dark');
-                        darkIcon.classList.remove('hidden');
-                        lightIcon.classList.add('hidden');
-                    }
-                };
-
-                const savedTheme = localStorage.getItem('theme');
-                applyTheme(savedTheme || 'light');
-
-                themeToggleBtn.addEventListener('click', () => {
-                    const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                    applyTheme(newTheme);
-                    localStorage.setItem('theme', newTheme);
-                });
-
-                // ANIMATION OBSERVER
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                        }
-                    });
-                }, { threshold: 0.1 });
-                
-                // VOTING (Secure)
-                async function handleVoteClick(event, id) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    
-                    const resourceIndex = resources.findIndex(r => r.id === id);
-                    if (resourceIndex === -1) return;
-                    
-                    const resource = resources[resourceIndex];
-                    if (resource.votedBy && resource.votedBy.includes(userUid)) {
-                        console.log("Already voted for this item (checked locally).");
-                        return;
-                    }
-                    
-                    const resourceRef = doc(db, `resources`, id);
-                    
-                    try {
-                        // Atomically increment votes and add user's UID to the 'votedBy' array
-                        await updateDoc(resourceRef, {
-                            votes: increment(1),
-                            votedBy: arrayUnion(userUid)
-                        });
-
-                        // Update local data to reflect the vote
-                        resources[resourceIndex].votes++;
-                        if (resources[resourceIndex].votedBy) {
-                            resources[resourceIndex].votedBy.push(userUid);
-                        } else {
-                            resources[resourceIndex].votedBy = [userUid];
-                        }
-                        
-                        // Update the UI
-                        const voteCountElement = document.getElementById(`vote-count-${id}`);
-                        const voteButtonElement = document.getElementById(`vote-btn-${id}`);
-                        
-                        if (voteCountElement) {
-                            const currentVotes = parseInt(voteCountElement.innerText);
-                            voteCountElement.innerText = currentVotes + 1;
-                            
-                            voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
-                            setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
-                        }
-                        if (voteButtonElement) {
-                            voteButtonElement.disabled = true;
-                            voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
-                            voteButtonElement.classList.add('text-blue-500');
-                        }
-                    } catch (error) {
-                        console.error("Vote failed:", error.message);
-                        if (error.code === 'permission-denied') {
-                             console.log("Permission denied. You likely already voted.");
-                             const voteButtonElement = document.getElementById(`vote-btn-${id}`);
-                             if(voteButtonElement) voteButtonElement.disabled = true;
-                        }
-                    }
-                }
-                window.handleVoteClick = handleVoteClick;
-
-                // RENDERING (XSS Patched + Tabnabbing Fix)
                 const renderResources = (data) => {
-                    grid.innerHTML = '';
-                    if (data.length === 0) {
-                        grid.innerHTML = `<p class="text-center text-gray-200 col-span-full is-visible">No resources found.</p>`;
-                        return;
-                    }
+                    grid.innerHTML = data.length === 0 ? 
+                        `<p class="text-center text-gray-200 col-span-full is-visible">No resources found.</p>` : '';
+                    
                     data.forEach(resource => {
+                        const { categories, subcategories } = normalizeData(resource);
+                        const hasVoted = resource.votedBy?.includes(userUid);
+
                         const card = document.createElement('a');
                         card.href = resource.url;
                         card.target = "_blank";
-                        card.rel = "noopener noreferrer"; // Tabnabbing fix
+                        card.rel = "noopener noreferrer";
                         card.className = 'glass-card rounded-xl overflow-hidden p-4 block no-underline';
                         
-                        // Check the 'votedBy' array from the database for the user's UID
-                        const hasVoted = resource.votedBy && resource.votedBy.includes(userUid);
-                        const voteButtonColor = hasVoted ? 'text-blue-500' : 'text-white/50';
-
-                        // Handle both old and new data formats
-                        let categories = [];
-                        let subcategories = [];
-
-                        if (resource.categories && Array.isArray(resource.categories)) {
-                            categories = resource.categories;
-                        } else if (resource.category) {
-                            categories = [resource.category];
-                        }
-
-                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
-                            subcategories = resource.subcategories;
-                        } else if (resource.subCategory) {
-                            subcategories = [resource.subCategory];
-                        }
-
-                        // --- START XSS FIX ---
                         const topDiv = document.createElement('div');
                         topDiv.className = 'flex justify-between items-start mb-3';
 
@@ -440,10 +382,8 @@
 
                         const voteButton = document.createElement('button');
                         voteButton.id = `vote-btn-${resource.id}`;
-                        voteButton.className = `vote-btn ${voteButtonColor} hover:text-blue-400 transition`;
-                        if (hasVoted) {
-                            voteButton.disabled = true;
-                        }
+                        voteButton.className = `vote-btn ${hasVoted ? 'text-blue-500' : 'text-white/50 hover:text-blue-400'} transition`;
+                        voteButton.disabled = hasVoted;
                         voteButton.onclick = (event) => handleVoteClick(event, resource.id);
                         
                         const voteIcon = document.createElement('i');
@@ -472,8 +412,6 @@
 
                         card.appendChild(topDiv);
                         card.appendChild(badgesDiv);
-                        // --- END XSS FIX ---
-
                         grid.appendChild(card);
                         observer.observe(card);
                     });
@@ -489,59 +427,30 @@
                 const filterAndRender = () => {
                     const searchTerm = searchInput.value.toLowerCase();
                     const selectedCategory = filterSelect.value;
-                    const selectedSubCategory = activeSubCategory;
 
                     let scoredResources = resources.map(resource => {
-                        let score = 0;
+                        const { categories, subcategories } = normalizeData(resource);
                         const name = resource.name.toLowerCase();
+                        const lowerCategories = categories.map(c => c.toLowerCase().replace('-', ' '));
+                        const lowerSubcategories = subcategories.map(s => s.toLowerCase());
                         
-                        let categories = [];
-                        let subcategories = [];
-                        
-                        if (resource.categories && Array.isArray(resource.categories)) {
-                            categories = resource.categories.map(c => c.toLowerCase().replace('-', ' '));
-                        } else if (resource.category) {
-                            categories = [resource.category.toLowerCase().replace('-', ' ')];
+                        let score = 0;
+                        if (searchTerm) {
+                            if (name.includes(searchTerm)) score = 3;
+                            else if (lowerCategories.some(cat => cat.includes(searchTerm))) score = 2;
+                            else if (lowerSubcategories.some(sub => sub.includes(searchTerm))) score = 1;
                         }
-
-                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
-                            subcategories = resource.subcategories.map(s => s.toLowerCase());
-                        } else if (resource.subCategory) {
-                            subcategories = [resource.subCategory.toLowerCase()];
-                        }
-
-                        if (searchTerm && name.includes(searchTerm)) score = 3;
-                        else if (searchTerm && categories.some(cat => cat.includes(searchTerm))) score = 2;
-                        else if (searchTerm && subcategories.some(sub => sub.includes(searchTerm))) score = 1;
 
                         return { resource, score };
                     });
 
                     let filteredResources = scoredResources.filter(item => {
-                        const { resource } = item;
+                        const { categories, subcategories } = normalizeData(item.resource);
                         
-                        let resourceCategories = [];
-                        let resourceSubcategories = [];
-                        
-                        if (resource.categories && Array.isArray(resource.categories)) {
-                            resourceCategories = resource.categories;
-                        } else if (resource.category) {
-                            resourceCategories = [resource.category];
-                        }
-
-                        if (resource.subcategories && Array.isArray(resource.subcategories)) {
-                            resourceSubcategories = resource.subcategories;
-                        } else if (resource.subCategory) {
-                            resourceSubcategories = [resource.subCategory];
-                        }
-                        
-                        const categoryMatch = selectedCategory === 'all' || resourceCategories.includes(selectedCategory);
-                        const searchMatch = searchTerm ? item.score > 0 : true;
-                        
-                        let subCategoryMatch = true;
-                        if (selectedCategory === 'entertainment' && selectedSubCategory !== 'all') {
-                            subCategoryMatch = resourceSubcategories.includes(selectedSubCategory);
-                        }
+                        const categoryMatch = selectedCategory === 'all' || categories.includes(selectedCategory);
+                        const searchMatch = !searchTerm || item.score > 0;
+                        const subCategoryMatch = selectedCategory !== 'entertainment' || activeSubCategory === 'all' || 
+                                                 subcategories.includes(activeSubCategory);
                         
                         return searchMatch && categoryMatch && subCategoryMatch;
                     })
@@ -551,9 +460,8 @@
                     renderResources(filteredResources);
                 };
                 
-                // DATA FETCHING
                 async function fetchData() {
-                    const q = query(resourcesRef, orderBy('votes', 'desc'));
+                    const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
                     try {
                         const snapshot = await getDocs(q);
                         resources = snapshot.docs.map(doc => ({ id: doc.id, votedBy: [], ...doc.data() }));
@@ -565,7 +473,6 @@
                 }
                 fetchData();
 
-                // EVENT LISTENERS
                 searchInput.addEventListener('input', filterAndRender);
                 filterSelect.addEventListener('change', () => {
                     subFilterContainer.classList.toggle('hidden', filterSelect.value !== 'entertainment');
@@ -592,10 +499,8 @@
                 suggestionForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     
-                    const form = e.target;
-                    const formData = new FormData(form);
-                    const object = Object.fromEntries(formData.entries());
-                    const json = JSON.stringify(object);
+                    const formData = new FormData(e.target);
+                    const json = JSON.stringify(Object.fromEntries(formData.entries()));
             
                     const resultEl = document.getElementById('suggestionResult');
                     resultEl.innerHTML = "Submitting...";
@@ -616,7 +521,7 @@
                         if (result.success) {
                             resultEl.innerHTML = "Suggestion submitted successfully! Thank you.";
                             resultEl.classList.add('text-green-500');
-                            form.reset();
+                            e.target.reset();
                             setTimeout(() => {
                                 hideModal(suggestionModal);
                                 resultEl.innerHTML = "";
@@ -636,13 +541,23 @@
                 window.addEventListener('scroll', () => toTopBtn.classList.toggle('hidden', window.scrollY <= 300));
                 toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
                 
-                function showModal(modal) { modal.classList.replace('hidden', 'flex'); }
-                function hideModal(modal) { modal.classList.replace('flex', 'hidden'); }
+                const showModal = (modal) => modal.classList.replace('hidden', 'flex');
+                const hideModal = (modal) => modal.classList.replace('flex', 'hidden');
             }
         });
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
 
 
 
