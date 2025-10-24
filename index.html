@@ -204,6 +204,7 @@
         <div class="relative w-full max-w-md p-8 m-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
             <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Suggest a Site</h2>
             <form id="suggestionForm">
+                 <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c">
                 <div class="mb-4">
                     <label for="suggestSiteName" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Site Name</label>
                     <input type="text" id="suggestSiteName" name="Site Name" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
@@ -239,7 +240,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         // IMPORTANT: Replace this with your actual Firebase config
-        // For best security, load this from a separate, git-ignored file.
         const firebaseConfig = {
             apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
             authDomain: "site-hub-29fb2.firebaseapp.com",
@@ -306,19 +306,28 @@
                     entries.forEach(entry => entry.isIntersecting && entry.target.classList.add('is-visible'));
                 }, { threshold: 0.1 });
                 
-                // --- UPDATED: handleVoteClick (Toggle Logic) ---
+                // --- (RACE CONDITION FIXED) handleVoteClick ---
                 async function handleVoteClick(event, id) {
                     event.preventDefault();
                     event.stopPropagation();
                     
+                    const voteButtonElement = document.getElementById(`vote-btn-${id}`);
+
+                    if (!voteButtonElement || voteButtonElement.disabled) {
+                        return;
+                    }
+
+                    voteButtonElement.disabled = true;
+
                     const resourceIndex = resources.findIndex(r => r.id === id);
-                    if (resourceIndex === -1) return;
+                    if (resourceIndex === -1) {
+                        voteButtonElement.disabled = false;
+                        return;
+                    }
                     
                     const resource = resources[resourceIndex];
                     const docRef = doc(db, 'resources', id);
                     const voteCountElement = document.getElementById(`vote-count-${id}`);
-                    const voteButtonElement = document.getElementById(`vote-btn-${id}`);
-
                     const hasVoted = resource.votedBy?.includes(userUid);
 
                     try {
@@ -359,7 +368,8 @@
                         }
                     } catch (error) {
                         console.error("Vote toggle failed:", error.message);
-                        // Show error to user?
+                    } finally {
+                        voteButtonElement.disabled = false;
                     }
                 }
                 window.handleVoteClick = handleVoteClick;
@@ -453,7 +463,6 @@
                     });
                 };
 
-                // --- NEW: Dynamic Sub-filter Button Generation ---
                 function generateSubFilterButtons() {
                     subFilterButtonsWrapper.innerHTML = '';
                     
@@ -489,7 +498,6 @@
                     });
                     return button;
                 }
-                // --- End of new functions ---
 
                 const filterAndRender = () => {
                     const searchTerm = searchInput.value.toLowerCase();
@@ -541,7 +549,6 @@
 
                 searchInput.addEventListener('input', filterAndRender);
 
-                // --- UPDATED: filterSelect listener (for dynamic filters) ---
                 filterSelect.addEventListener('change', () => {
                     const selectedCategory = filterSelect.value;
                     const isEntertainment = selectedCategory === 'entertainment';
@@ -562,7 +569,7 @@
                     if (e.target === suggestionModal) hideModal(suggestionModal);
                 });
 
-                // --- UPDATED: suggestionForm (submits to Firestore) ---
+                // --- (Simultaneous Firestore & Web3Forms) suggestionForm ---
                 suggestionForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
                     
@@ -571,11 +578,18 @@
                     resultEl.classList.remove('text-green-500', 'text-red-500');
 
                     try {
-                        const name = document.getElementById('suggestSiteName').value;
-                        const url = document.getElementById('suggestSiteUrl').value;
-                        const reason = document.getElementById('suggestReason').value;
-
-                        await addDoc(collection(db, 'suggestions'), {
+                        // --- 1. Get Data ---
+                        const formData = new FormData(e.target);
+                        const json = JSON.stringify(Object.fromEntries(formData.entries()));
+                        
+                        const name = formData.get('Site Name');
+                        const url = formData.get('Site URL');
+                        const reason = formData.get('Reason');
+                        
+                        // --- 2. Create Promises ---
+                        
+                        // Promise 1: Firestore
+                        const firestorePromise = addDoc(collection(db, 'suggestions'), {
                             name: name,
                             url: url,
                             reason: reason,
@@ -583,15 +597,39 @@
                             status: 'pending'
                         });
 
+                        // Promise 2: Web3Forms
+                        const web3FormsPromise = fetch('https://api.web3forms.com/submit', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: json
+                        });
+
+                        // --- 3. Run in Parallel ---
+                        const [firestoreResult, web3FormsResponse] = await Promise.all([
+                            firestorePromise,
+                            web3FormsPromise
+                        ]);
+
+                        // --- 4. Check Web3Forms Result (optional) ---
+                        const web3Result = await web3FormsResponse.json();
+                        if (!web3Result.success) {
+                            console.warn("Web3Forms email failed, but suggestion was saved to queue.", web3Result);
+                        }
+
+                        // --- 5. Success (as long as Firestore worked) ---
                         resultEl.innerHTML = "Suggestion submitted successfully! Thank you.";
                         resultEl.classList.add('text-green-500');
                         e.target.reset();
                         setTimeout(() => {
                             hideModal(suggestionModal);
                             resultEl.innerHTML = "";
-                        }, 3000);
+                        }, 1000);
 
                     } catch (error) {
+                        // This will catch if EITHER promise fails
                         console.error("Error submitting suggestion:", error);
                         resultEl.innerHTML = "An error occurred while submitting.";
                         resultEl.classList.add('text-red-500');
