@@ -2,6 +2,8 @@
 
 A beautiful, glassmorphic web directory for organizing and sharing your favorite websites and resources. Features user voting, category filtering, and an admin panel for resource management.
 
+<img width="1919" height="911" alt="Screenshot 2026-02-16 113755" src="https://github.com/user-attachments/assets/4f45752a-eaaa-46ce-90b1-5719b105c14a" />
+
 ## 🌟 Features
 
 ### User Features
