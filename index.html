@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VSH</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⭐</text></svg>">
+    <title>VIT Site Hub | Student Resource Directory</title>
+    <meta name="description" content="Curated resources for VIT students. Notes, tools, entertainment, and more.">
+    <link rel="icon" type="image/png" href="assets/flaticon.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -18,11 +17,24 @@
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
                     colors: {
-                        teal: { 500: '#14b8a6' },
-                        cyan: { 500: '#06b6d4' },
-                        amber: { 500: '#f59e0b' },
-                        yellow: { 500: '#eab308' }
+                        dark: { 900: '#11111b', 800: '#1e1e2e', 700: '#313244' },
+                        brand: { 500: '#cba6f7', 600: '#b4befe' }
+                    },
+                    animation: {
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
                     }
                 }
             }
@@ -30,620 +42,740 @@
     </script>
 
     <style>
-        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Poppins', sans-serif;
-            background-image: url('https://images.unsplash.com/photo-1554034483-04fda0d3507b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            transition: background-color 0.5s ease-in-out, background-image 0.5s ease-in-out;
+            background-color: #f3f4f6;
+            color: #1f2937;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .dark body {
-            background-image: none;
-            background-color: #111827;
-        }
-        .dark .glass-card, .dark .skeleton-card {
-            background: rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .dark .glass-card:hover {
-            background: rgba(0, 0, 0, 0.3);
-        }
-        .dark .modal-bg {
-             background: rgba(0, 0, 0, 0.7);
-        }
-        .dark #suggestionModal > div {
-            background-color: #1f2937;
-        }
-        .dark select option {
-            background-color: #374151;
-            color: #f3f4f6;
-        }
-        .dark .skeleton-placeholder {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .dark .sub-filter-btn {
-            background-color: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-        .dark .sub-filter-btn:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .dark .sub-filter-btn.active {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: #11111b;
+            background-image: radial-gradient(circle at 50% 0%, #313244 0%, #11111b 70%);
+            color: #cdd6f4;
+            background-attachment: fixed;
         }
 
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        /* Glass Cards */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+        }
+
+        .dark .glass-panel {
+            background: rgba(30, 30, 46, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+        .dark .glass-panel:hover {
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            border-color: rgba(203, 166, 247, 0.3);
+        }
+
+        /* Staggered Animation Logic */
+        .card-enter {
             opacity: 0;
-            transform: translateY(20px);
+            animation: slideUp 0.5s ease-out forwards;
         }
-        .glass-card.is-visible {
-            opacity: 1;
-            transform: translateY(0);
+        .card-enter:nth-child(1) { animation-delay: 50ms; }
+        .card-enter:nth-child(2) { animation-delay: 100ms; }
+        .card-enter:nth-child(3) { animation-delay: 150ms; }
+        .card-enter:nth-child(4) { animation-delay: 200ms; }
+        .card-enter:nth-child(5) { animation-delay: 250ms; }
+        .card-enter:nth-child(6) { animation-delay: 300ms; }
+        .card-enter:nth-child(7) { animation-delay: 350ms; }
+        .card-enter:nth-child(8) { animation-delay: 400ms; }
+        .card-enter:nth-child(9) { animation-delay: 450ms; }
+        .card-enter:nth-child(10) { animation-delay: 500ms; }
+        .card-enter:nth-child(11) { animation-delay: 550ms; }
+        .card-enter:nth-child(12) { animation-delay: 600ms; }
+
+        /* Inputs */
+        .custom-input {
+            transition: all 0.2s;
         }
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.2); 
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-            transform: translateY(-5px) !important;
+        .custom-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(203, 166, 247, 0.5);
         }
 
-        .modal-bg {
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
+        /* Badges */
+        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; letter-spacing: 0.02em; }
+        .badge-new { background: #f38ba8; color: #11111b; animation: pulse 2s infinite; }
 
-        select option {
-            color: #000;
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #45475a; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #585b70; }
 
-        .skeleton-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-        }
-        .skeleton-placeholder {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
+        /* Custom Dropdown Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
 
         .sub-filter-btn.active {
-            background-color: rgba(255, 255, 255, 0.3);
-            font-weight: 600;
+            background-color: #cba6f7;
+            color: #11111b;
+            font-weight: 700;
         }
     </style>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DDEMB3X2XQ"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<body class="flex flex-col min-h-screen">
 
-  gtag('config', 'G-DDEMB3X2XQ');
-</script>
+    <div id="announcement-banner" class="hidden relative z-[100] px-4 py-3 text-center text-sm font-medium animate-slide-up shadow-lg">
+        <span id="announcement-text"></span>
+        <button id="close-announcement" class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100"><i class="fas fa-times"></i></button>
+    </div>
 
-<body class="text-gray-800 dark:text-gray-200">
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
-    <button id="theme-toggle" class="fixed top-6 right-6 z-50 w-12 h-12 bg-white/20 hover:bg-white/30 text-white rounded-full shadow-lg flex justify-center items-center text-xl transition-colors duration-300 backdrop-blur-sm">
-        <i id="theme-toggle-dark-icon" class="fa fa-moon"></i>
-        <i id="theme-toggle-light-icon" class="fa fa-sun hidden"></i>
-    </button>
-
-    <header class="container mx-auto px-6 pt-12 pb-16 text-center">
-        <h1 class="text-5xl lg:text-6xl font-bold tracking-tight leading-tight text-white" style="text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">VIT Site Hub</h1>
-        <p class="mt-4 text-lg text-gray-200 dark:text-gray-300 max-w-2xl mx-auto" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">Your one-stop directory for learning, productivity, and everyday needs.</p>
-    </header>
-
-    <div class="container mx-auto px-6 mb-8">
-        <div class="flex flex-col md:flex-row gap-4 justify-between items-center p-4 rounded-xl glass-card is-visible">
-            <div class="flex flex-col sm:flex-row gap-4 w-full md:flex-grow">
-                <div class="relative flex-grow">
-                    <i class="fa fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                    <input type="text" id="searchInput" placeholder="Search for a resource..." class="w-full text-white bg-white/10 border border-white/20 rounded-lg py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-white/50 transition placeholder-gray-300 dark:bg-gray-700/50 dark:border-gray-600 dark:placeholder-gray-400">
-                </div>
-                <select id="filterSelect" class="w-full sm:w-auto text-white bg-white/10 border border-white/20 rounded-lg py-3 pl-4 pr-10 appearance-none focus:outline-none focus:ring-2 focus:ring-white/50 transition dark:bg-gray-700/50 dark:border-gray-600">
-                    <option value="all">All Categories</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="academics">Academics</option>
-                    <option value="notes">Notes & PYQs</option>
-                    <option value="productivity">Productivity</option>
-                    <option value="coding">Coding & Dev</option>
-                    <option value="design">Design</option>
-                    <option value="utilities">Utilities</option>
-                    <option value="student-projects">Student Projects</option>
-                </select>
-            </div>
-            <div class="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                <button id="suggestResourceBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors duration-300 shadow-lg flex items-center justify-center gap-2 w-full">
-                    <i class="fa fa-lightbulb"></i> Suggest
-                </button>
-            </div>
+    <nav class="container mx-auto px-6 py-6 flex justify-between items-center z-[60] relative">
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">V</div>
+            <span class="text-xl font-bold tracking-tight dark:text-white">Site<span class="text-purple-500">Hub</span></span>
         </div>
-    </div>
+        <div class="flex gap-4">
+            <button id="theme-toggle" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center transition hover:bg-gray-300 dark:hover:bg-white/20">
+                <i class="fas fa-moon text-gray-700 dark:text-gray-300" id="theme-icon"></i>
+            </button>
+            <button onclick="document.getElementById('suggestionModal').classList.remove('hidden')" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-purple-500/20 transition transform hover:scale-105">
+                <i class="fas fa-plus mr-2"></i> Submit Site
+            </button>
+        </div>
+    </nav>
 
-    <div id="subFilterContainer" class="container mx-auto px-6 mb-8 hidden">
-        <div id="subFilterButtons" class="flex flex-wrap gap-2">
-            </div>
-    </div>
+    <header class="relative container mx-auto px-6 pt-10 pb-16 text-center z-50">
+        <div class="max-w-3xl mx-auto animate-slide-up">
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 dark:text-white leading-tight">
+                Everything you need,<br> 
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">in one place.</span>
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400 text-lg mb-10 max-w-xl mx-auto">
+                A community-curated directory of resources for VIT students. 
+                From academics to entertainment.
+            </p>
 
-    <main class="container mx-auto px-6 pb-12">
-        <div id="resourceGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            <script>
-                for (let i = 0; i < 8; i++) {
-                    document.write(`
-                        <div class="skeleton-card rounded-xl p-6 animate-pulse">
-                            <div class="flex justify-between items-start">
-                                <div class="skeleton-placeholder h-6 w-3/4 rounded"></div>
-                                <div class="skeleton-placeholder h-6 w-1/4 rounded"></div>
+            <div class="relative max-w-2xl mx-auto group z-50">
+                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div class="relative bg-white dark:bg-[#1e1e2e] rounded-2xl p-2 shadow-2xl flex flex-col md:flex-row gap-2 items-center">
+                    
+                    <div class="flex-1 flex items-center pl-4 w-full">
+                        <i class="fas fa-search text-gray-400 text-lg"></i>
+                        <input type="text" id="searchInput" placeholder="Search resources (e.g., 'calc', 'movies')..." 
+                            class="w-full bg-transparent border-none p-4 text-gray-800 dark:text-white focus:ring-0 placeholder-gray-400 text-lg custom-input">
+                    </div>
+                    
+                    <div class="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 hidden md:block"></div>
+                    
+                    <div class="relative w-full md:w-56 z-50">
+                        <input type="hidden" id="filterSelect" value="all">
+                        
+                        <button id="dropdownTrigger" class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-left text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 focus:outline-none group">
+                            <span id="dropdownLabel" class="flex items-center gap-2 font-medium truncate">
+                                <i class="fas fa-layer-group text-purple-400"></i> Everything
+                            </span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:text-white transition-transform duration-300" id="dropdownArrow"></i>
+                        </button>
+
+                        <div id="dropdownMenu" class="hidden absolute top-full right-0 mt-2 w-full bg-[#1e1e2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden origin-top-right transform transition-all duration-200 scale-95 opacity-0 z-50">
+                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition border-b border-white/5" data-value="all" data-icon="fa-layer-group" data-color="text-purple-400">
+                                <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 flex-shrink-0"><i class="fas fa-layer-group"></i></div>
+                                <span class="font-medium truncate">Everything</span>
                             </div>
-                            <div class="flex flex-wrap gap-2 mt-4">
-                                <div class="skeleton-placeholder h-5 w-1/3 rounded-full"></div>
-                                <div class="skeleton-placeholder h-5 w-1/4 rounded-full"></div>
+                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition" data-value="favorites" data-icon="fa-star" data-color="text-yellow-400">
+                                <div class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 flex-shrink-0"><i class="fas fa-star"></i></div>
+                                <span class="font-medium truncate">Favorites</span>
+                            </div>
+                            <div class="h-px bg-white/10 my-1 mx-4"></div>
+                            <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="academics" data-icon="fa-graduation-cap" data-color="text-blue-400">
+                                    <i class="fas fa-graduation-cap w-5 text-center text-blue-400 flex-shrink-0"></i> Academics
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="notes" data-icon="fa-book" data-color="text-yellow-400">
+                                    <i class="fas fa-book w-5 text-center text-yellow-400 flex-shrink-0"></i> Notes & PYQs
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="entertainment" data-icon="fa-film" data-color="text-pink-400">
+                                    <i class="fas fa-film w-5 text-center text-pink-400 flex-shrink-0"></i> Entertainment
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="productivity" data-icon="fa-check-double" data-color="text-green-400">
+                                    <i class="fas fa-check-double w-5 text-center text-green-400 flex-shrink-0"></i> Productivity
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="coding" data-icon="fa-code" data-color="text-teal-400">
+                                    <i class="fas fa-code w-5 text-center text-teal-400 flex-shrink-0"></i> Coding
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="design" data-icon="fa-palette" data-color="text-orange-400">
+                                    <i class="fas fa-palette w-5 text-center text-orange-400 flex-shrink-0"></i> Design
+                                </div>
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="utilities" data-icon="fa-tools" data-color="text-gray-400">
+                                    <i class="fas fa-tools w-5 text-center text-gray-400 flex-shrink-0"></i> Utilities
+                                </div>
+                                 <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="student-projects" data-icon="fa-flask" data-color="text-indigo-400">
+                                    <i class="fas fa-flask w-5 text-center text-indigo-400 flex-shrink-0"></i> Projects
+                                </div>
                             </div>
                         </div>
-                    `);
-                }
-            </script>
+                    </div>
+                </div>
+            </div>
+
+            <div id="subFilterContainer" class="mt-6 flex flex-wrap justify-center gap-2 hidden animate-slide-up">
+                </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 pb-20 flex-grow z-0 relative">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold dark:text-white flex items-center gap-2">
+                <i class="fas fa-layer-group text-purple-500"></i> Resources
+                <span id="resourceCount" class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-600 dark:text-gray-300">0</span>
+            </h2>
+            <select id="sortSelect" class="bg-white dark:bg-[#1e1e2e] dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2 focus:outline-none focus:border-purple-500">
+                <option value="popular">Most Voted</option>
+                <option value="newest">Newest Added</option>
+                <option value="alpha">A-Z Name</option>
+            </select>
+        </div>
+
+        <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            </div>
+
+        <div id="paginationContainer" class="flex justify-center mt-12 hidden">
+            <button id="loadMoreBtn" class="bg-white/10 hover:bg-white/20 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-full font-bold transition shadow-lg flex items-center gap-2 border border-gray-200 dark:border-gray-700">
+                Load More Resources <i class="fas fa-chevron-down"></i>
+            </button>
         </div>
     </main>
 
-    <div id="suggestionModal" class="fixed inset-0 z-50 items-center justify-center hidden">
-        <div class="modal-bg absolute inset-0"></div>
-        <div class="relative w-full max-w-md p-8 m-4 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Suggest a Site</h2>
-            <form id="suggestionForm">
-                 <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c">
-                <div class="mb-4">
-                    <label for="suggestSiteName" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Site Name</label>
-                    <input type="text" id="suggestSiteName" name="Site Name" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+    <footer class="mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#181825] py-8 z-0">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-500 dark:text-gray-400 mb-2">&copy; 2024 VIT Site Hub. Built for students.</p>
+            <div class="flex justify-center gap-4 text-sm">
+                <a href="main.html" class="text-gray-400 hover:text-purple-400 transition"><i class="fas fa-shield-alt"></i> Admin Login</a>
+                <a href="#" onclick="document.getElementById('suggestionModal').classList.remove('hidden')" class="text-gray-400 hover:text-purple-400 transition">Submit Site</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="suggestionModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-[#1e1e2e] w-full max-w-md rounded-2xl shadow-2xl p-6 relative animate-slide-up">
+            <button onclick="document.getElementById('suggestionModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <h2 class="text-2xl font-bold mb-1 dark:text-white">Suggest a Resource</h2>
+            <p class="text-gray-500 text-sm mb-6">Help us grow the library.</p>
+            
+            <form id="suggestionForm" class="space-y-4">
+                <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c"> 
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Name</label>
+                    <input type="text" name="Site Name" required class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
                 </div>
-                <div class="mb-4">
-                    <label for="suggestSiteUrl" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Site URL</label>
-                    <input type="url" id="suggestSiteUrl" name="Site URL" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">URL</label>
+                    <input type="url" name="Site URL" required class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
                 </div>
-                 <div class="mb-6">
-                    <label for="suggestReason" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Reason for Suggestion</label>
-                    <textarea id="suggestReason" name="Reason" rows="3" class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" required></textarea>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Why is this useful?</label>
+                    <textarea name="Reason" rows="3" class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500"></textarea>
                 </div>
-                <div id="suggestionResult" class="mb-4 text-center"></div>
-                <div class="flex justify-end gap-4">
-                    <button type="button" id="suggestionCancelBtn" class="py-2 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">Cancel</button>
-                    <button type="submit" class="py-2 px-6 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition font-semibold">Submit Suggestion</button>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition">Send Suggestion</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="reportModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-[#1e1e2e] w-full max-w-sm rounded-2xl shadow-2xl p-6 animate-slide-up">
+            <h2 class="text-xl font-bold mb-4 text-red-500 flex items-center gap-2"><i class="fas fa-flag"></i> Report Issue</h2>
+            <p id="reportTargetName" class="text-gray-500 text-sm mb-4 truncate">...</p>
+            
+            <form id="reportForm" class="space-y-3">
+                <input type="hidden" id="reportResourceId">
+                <input type="hidden" id="reportResourceName">
+                
+                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Broken Link" checked class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                    <span class="ml-3 text-sm font-medium dark:text-gray-300">Link is broken</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Outdated Info" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                    <span class="ml-3 text-sm font-medium dark:text-gray-300">Information is outdated</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Wrong Category" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                    <span class="ml-3 text-sm font-medium dark:text-gray-300">Wrong category</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Inappropriate" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                    <span class="ml-3 text-sm font-medium dark:text-gray-300">Inappropriate content</span>
+                </label>
+                 <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Other" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                    <span class="ml-3 text-sm font-medium dark:text-gray-300">Other</span>
+                </label>
+                
+                <div class="flex gap-3 mt-4">
+                    <button type="button" onclick="document.getElementById('reportModal').classList.add('hidden')" class="flex-1 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm">Cancel</button>
+                    <button type="submit" class="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm">Report</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <button id="toTopBtn" class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-pink-500/80 hover:bg-pink-600 text-white rounded-full shadow-lg hidden justify-center items-center text-xl transition-opacity duration-300">
-        <i class="fa fa-arrow-up"></i>
+    <button id="toTopBtn" class="fixed bottom-6 right-6 hidden bg-purple-600 hover:bg-purple-700 text-white w-12 h-12 rounded-full shadow-lg z-40 items-center justify-center transition-all hover:scale-110">
+        <i class="fas fa-arrow-up"></i>
     </button>
 
-    <footer class="text-center py-6 mt-12">
-        <p class="text-gray-200 dark:text-gray-400" style="text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">&copy; 2024 The Ultimate Site Hub. All rights reserved.</p>
-    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const trigger = document.getElementById('dropdownTrigger');
+            const menu = document.getElementById('dropdownMenu');
+            const arrow = document.getElementById('dropdownArrow');
+            const label = document.getElementById('dropdownLabel');
+            const hiddenInput = document.getElementById('filterSelect');
+
+            function closeDropdown() {
+                menu.classList.remove('scale-100', 'opacity-100');
+                menu.classList.add('scale-95', 'opacity-0');
+                arrow.classList.remove('rotate-180');
+                setTimeout(() => menu.classList.add('hidden'), 200);
+            }
+
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    requestAnimationFrame(() => {
+                        menu.classList.remove('scale-95', 'opacity-0');
+                        menu.classList.add('scale-100', 'opacity-100');
+                    });
+                    arrow.classList.add('rotate-180');
+                } else {
+                    closeDropdown();
+                }
+            });
+
+            document.querySelectorAll('.dropdown-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const value = item.dataset.value;
+                    const icon = item.dataset.icon;
+                    const color = item.dataset.color;
+                    const text = item.innerText;
+
+                    label.innerHTML = `<i class="fas ${icon} ${color}"></i> ${text}`;
+                    hiddenInput.value = value;
+                    hiddenInput.dispatchEvent(new Event('change'));
+                    closeDropdown();
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!trigger.contains(e.target) && !menu.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+        });
+    </script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, doc, updateDoc, increment, query, orderBy, getDocs, arrayUnion, arrayRemove, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, updateDoc, increment, query, orderBy, getDocs, arrayUnion, arrayRemove, addDoc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // IMPORTANT: Replace this with your actual Firebase config
         const firebaseConfig = {
-            apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
-            authDomain: "site-hub-29fb2.firebaseapp.com",
-            projectId: "site-hub-29fb2",
-            storageBucket: "site-hub-29fb2.appspot.com",
-            messagingSenderId: "373988520340",
-            appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
-            measurementId: "G-DDEMB3X2XQ"
+          apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
+          authDomain: "site-hub-29fb2.firebaseapp.com",
+          projectId: "site-hub-29fb2",
+          storageBucket: "site-hub-29fb2.firebasestorage.app",
+          messagingSenderId: "373988520340",
+          appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
+          measurementId: "G-DDEMB3X2XQ"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    initializeAppLogic(user);
-                } else {
-                    signInAnonymously(auth).catch((error) => {
-                        console.error("Anonymous sign-in failed:", error);
-                        document.getElementById('resourceGrid').innerHTML = 
-                            `<p class="text-center text-red-400 col-span-full is-visible">Authentication Failed. Please check your Firebase setup and security rules.</p>`;
-                    });
-                }
-            });
 
-            function initializeAppLogic(user) {
-                if (!user) return console.error("Initialization failed: No user found.");
-                
-                const userUid = user.uid;
-                let resources = [];
-                let activeSubCategory = 'all';
+        // State
+        let allResources = [];
+        let filteredResources = []; 
+        let favorites = JSON.parse(localStorage.getItem('vsh_favorites') || '[]');
+        let userUid = null;
+        let activeSubFilter = 'all';
+        let searchTimeout;
+        const ITEMS_PER_PAGE = 12;
+        let currentPage = 1;
 
-                const grid = document.getElementById('resourceGrid');
-                const searchInput = document.getElementById('searchInput');
-                const filterSelect = document.getElementById('filterSelect');
-                const subFilterContainer = document.getElementById('subFilterContainer');
-                const subFilterButtonsWrapper = document.getElementById('subFilterButtons');
-                const toTopBtn = document.getElementById('toTopBtn');
-                const themeToggleBtn = document.getElementById('theme-toggle');
-                const darkIcon = document.getElementById('theme-toggle-dark-icon');
-                const lightIcon = document.getElementById('theme-toggle-light-icon');
-                const suggestionModal = document.getElementById('suggestionModal');
-                const suggestResourceBtn = document.getElementById('suggestResourceBtn');
-                const suggestionCancelBtn = document.getElementById('suggestionCancelBtn');
-                const suggestionForm = document.getElementById('suggestionForm');
-                
-                const applyTheme = (theme) => {
-                    document.documentElement.classList.toggle('dark', theme === 'dark');
-                    darkIcon.classList.toggle('hidden', theme === 'dark');
-                    lightIcon.classList.toggle('hidden', theme !== 'dark');
-                };
-
-                applyTheme(localStorage.getItem('theme') || 'light');
-
-                themeToggleBtn.addEventListener('click', () => {
-                    const newTheme = document.documentElement.classList.contains('dark') ? 'light' : 'dark';
-                    applyTheme(newTheme);
-                    localStorage.setItem('theme', newTheme);
-                });
-
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => entry.isIntersecting && entry.target.classList.add('is-visible'));
-                }, { threshold: 0.1 });
-                
-                // --- (RACE CONDITION FIXED) handleVoteClick ---
-                async function handleVoteClick(event, id) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    
-                    const voteButtonElement = document.getElementById(`vote-btn-${id}`);
-
-                    if (!voteButtonElement || voteButtonElement.disabled) {
-                        return;
-                    }
-
-                    voteButtonElement.disabled = true;
-
-                    const resourceIndex = resources.findIndex(r => r.id === id);
-                    if (resourceIndex === -1) {
-                        voteButtonElement.disabled = false;
-                        return;
-                    }
-                    
-                    const resource = resources[resourceIndex];
-                    const docRef = doc(db, 'resources', id);
-                    const voteCountElement = document.getElementById(`vote-count-${id}`);
-                    const hasVoted = resource.votedBy?.includes(userUid);
-
-                    try {
-                        if (hasVoted) {
-                            // --- User is UN-VOTING ---
-                            await updateDoc(docRef, {
-                                votes: increment(-1),
-                                votedBy: arrayRemove(userUid)
-                            });
-
-                            resources[resourceIndex].votes--;
-                            resources[resourceIndex].votedBy = resources[resourceIndex].votedBy.filter(uid => uid !== userUid);
-                            
-                            if (voteCountElement) voteCountElement.innerText = resources[resourceIndex].votes;
-                            if (voteButtonElement) {
-                                voteButtonElement.classList.remove('text-blue-500');
-                                voteButtonElement.classList.add('text-white/50', 'hover:text-blue-400');
-                            }
-                        } else {
-                            // --- User is UP-VOTING ---
-                            await updateDoc(docRef, {
-                                votes: increment(1),
-                                votedBy: arrayUnion(userUid)
-                            });
-
-                            resources[resourceIndex].votes++;
-                            resources[resourceIndex].votedBy = [...(resources[resourceIndex].votedBy || []), userUid];
-                            
-                            if (voteCountElement) {
-                                voteCountElement.innerText = resources[resourceIndex].votes;
-                                voteCountElement.classList.add('scale-150', 'transition-transform', 'duration-300');
-                                setTimeout(() => voteCountElement.classList.remove('scale-150'), 300);
-                            }
-                            if (voteButtonElement) {
-                                voteButtonElement.classList.remove('text-white/50', 'hover:text-blue-400');
-                                voteButtonElement.classList.add('text-blue-500');
-                            }
-                        }
-                    } catch (error) {
-                        console.error("Vote toggle failed:", error.message);
-                    } finally {
-                        voteButtonElement.disabled = false;
-                    }
-                }
-                window.handleVoteClick = handleVoteClick;
-
-                const normalizeData = (resource) => {
-                    const categories = resource.categories || (resource.category ? [resource.category] : []);
-                    const subcategories = resource.subcategories || (resource.subCategory ? [resource.subCategory] : []);
-                    return { ...resource, categories, subcategories };
-                };
-
-                const categoryColors = {
-                    entertainment: 'bg-purple-600',
-                    academics: 'bg-indigo-500',
-                    notes: 'bg-amber-500',
-                    productivity: 'bg-gray-700',
-                    coding: 'bg-teal-500',
-                    design: 'bg-pink-500',
-                    utilities: 'bg-cyan-500',
-                    'student-projects': 'bg-yellow-500',
-                };
-
-                const renderResources = (data) => {
-                    grid.innerHTML = data.length === 0 ? 
-                        `<p class="text-center text-gray-200 col-span-full is-visible">No resources found.</p>` : '';
-                    
-                    data.forEach(resource => {
-                        const { categories, subcategories } = resource;
-                        const hasVoted = resource.votedBy?.includes(userUid);
-
-                        const card = document.createElement('a');
-                        card.href = resource.url;
-                        card.target = "_blank";
-                        card.rel = "noopener noreferrer";
-                        card.className = 'glass-card rounded-xl overflow-hidden p-4 block no-underline';
-                        
-                        const topDiv = document.createElement('div');
-                        topDiv.className = 'flex justify-between items-start mb-3';
-
-                        const h2 = document.createElement('h2');
-                        h2.className = 'text-xl font-bold text-white pr-2';
-                        h2.textContent = resource.name;
-                        topDiv.appendChild(h2);
-
-                        const voteDiv = document.createElement('div');
-                        voteDiv.className = 'flex items-center gap-2 text-white font-semibold flex-shrink-0';
-
-                        const voteSpan = document.createElement('span');
-                        voteSpan.id = `vote-count-${resource.id}`;
-                        voteSpan.textContent = resource.votes || 0;
-                        voteDiv.appendChild(voteSpan);
-
-                        const voteButton = document.createElement('button');
-                        voteButton.id = `vote-btn-${resource.id}`;
-                        voteButton.className = `vote-btn ${hasVoted ? 'text-blue-500' : 'text-white/50 hover:text-blue-400'} transition`;
-                        voteButton.onclick = (event) => handleVoteClick(event, resource.id);
-                        
-                        const voteIcon = document.createElement('i');
-                        voteIcon.className = 'fas fa-arrow-up';
-                        voteButton.appendChild(voteIcon);
-                        voteDiv.appendChild(voteButton);
-                        
-                        topDiv.appendChild(voteDiv);
-
-                        const badgesDiv = document.createElement('div');
-                        badgesDiv.className = 'flex flex-wrap gap-2';
-
-                        categories.forEach(cat => {
-                            const badge = document.createElement('span');
-                            badge.className = `text-xs font-semibold ${categoryColors[cat] || 'bg-gray-500'} text-white py-1 px-2 rounded-full capitalize`;
-                            badge.textContent = cat.replace('-', ' ');
-                            badgesDiv.appendChild(badge);
-                        });
-
-                        subcategories.forEach(subcat => {
-                            const badge = document.createElement('span');
-                            badge.className = 'text-xs font-semibold bg-gray-500 text-white py-1 px-2 rounded-full capitalize';
-                            badge.textContent = subcat;
-                            badgesDiv.appendChild(badge);
-                        });
-
-                        card.appendChild(topDiv);
-                        card.appendChild(badgesDiv);
-                        grid.appendChild(card);
-                        observer.observe(card);
-                    });
-                };
-
-                const updateSubFilterButtons = () => {
-                    document.querySelectorAll('.sub-filter-btn').forEach(btn => {
-                        btn.classList.toggle('active', btn.dataset.value === activeSubCategory);
-                    });
-                };
-
-                function generateSubFilterButtons() {
-                    subFilterButtonsWrapper.innerHTML = '';
-                    
-                    const entertainmentResources = resources.filter(r => 
-                        (r.categories || []).includes('entertainment')
-                    );
-                    
-                    const allSubCategories = entertainmentResources.flatMap(r => r.subcategories || []);
-                    const uniqueSubCategories = [...new Set(allSubCategories)];
-                    
-                    const allButton = createSubFilterButton('all');
-                    subFilterButtonsWrapper.appendChild(allButton);
-                    
-                    uniqueSubCategories.sort().forEach(sub => {
-                        const button = createSubFilterButton(sub);
-                        subFilterButtonsWrapper.appendChild(button);
-                    });
-                    
-                    updateSubFilterButtons();
-                }
-
-                function createSubFilterButton(value) {
-                    const button = document.createElement('button');
-                    button.className = 'sub-filter-btn text-white bg-white/10 border border-white/20 rounded-full py-2 px-5 transition hover:bg-white/30 dark:border-gray-600 dark:hover:bg-gray-700';
-                    button.dataset.value = value;
-                    button.textContent = value.charAt(0).toUpperCase() + value.slice(1);
-                    
-                    button.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        activeSubCategory = button.dataset.value;
-                        updateSubFilterButtons();
-                        filterAndRender();
-                    });
-                    return button;
-                }
-
-                const filterAndRender = () => {
-                    const searchTerm = searchInput.value.toLowerCase();
-                    const selectedCategory = filterSelect.value;
-
-                    let scoredResources = resources.map(resource => {
-                        const name = resource.name.toLowerCase();
-                        const lowerCategories = resource.categories.map(c => c.toLowerCase().replace('-', ' '));
-                        const lowerSubcategories = resource.subcategories.map(s => s.toLowerCase());
-                        
-                        let score = 0;
-                        if (searchTerm) {
-                            if (name.includes(searchTerm)) score = 3;
-                            else if (lowerCategories.some(cat => cat.includes(searchTerm))) score = 2;
-                            else if (lowerSubcategories.some(sub => sub.includes(searchTerm))) score = 1;
-                        }
-
-                        return { resource, score };
-                    });
-
-                    let filteredResources = scoredResources.filter(item => {
-                        const { categories, subcategories } = item.resource;
-                        
-                        const categoryMatch = selectedCategory === 'all' || categories.includes(selectedCategory);
-                        const searchMatch = !searchTerm || item.score > 0;
-                        const subCategoryMatch = selectedCategory !== 'entertainment' || activeSubCategory === 'all' || 
-                                                 subcategories.includes(activeSubCategory);
-                        
-                        return searchMatch && categoryMatch && subCategoryMatch;
-                    })
-                    .sort((a, b) => b.score - a.score || b.resource.votes - a.resource.votes)
-                    .map(item => item.resource);
-
-                    renderResources(filteredResources);
-                };
-                
-                async function fetchData() {
-                    const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
-                    try {
-                        const snapshot = await getDocs(q);
-                        resources = snapshot.docs.map(doc => normalizeData({ id: doc.id, votedBy: [], ...doc.data() }));
-                        filterAndRender();
-                    } catch (error) {
-                        console.error("Error fetching data from Firestore: ", error);
-                        grid.innerHTML = `<p class="text-center text-red-400 col-span-full is-visible">Error loading data. Check Firestore rules and configuration.</p>`;
-                    }
-                }
-                fetchData();
-
-                searchInput.addEventListener('input', filterAndRender);
-
-                filterSelect.addEventListener('change', () => {
-                    const selectedCategory = filterSelect.value;
-                    const isEntertainment = selectedCategory === 'entertainment';
-                    
-                    subFilterContainer.classList.toggle('hidden', !isEntertainment);
-                    
-                    if (isEntertainment) {
-                        generateSubFilterButtons();
-                    }
-                    
-                    activeSubCategory = 'all'; 
-                    filterAndRender();
-                });
-
-                suggestResourceBtn.addEventListener('click', () => showModal(suggestionModal));
-                suggestionCancelBtn.addEventListener('click', () => hideModal(suggestionModal));
-                suggestionModal.addEventListener('click', (e) => {
-                    if (e.target === suggestionModal) hideModal(suggestionModal);
-                });
-
-                // --- (Simultaneous Firestore & Web3Forms) suggestionForm ---
-                suggestionForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    
-                    const resultEl = document.getElementById('suggestionResult');
-                    resultEl.innerHTML = "Submitting...";
-                    resultEl.classList.remove('text-green-500', 'text-red-500');
-
-                    try {
-                        // --- 1. Get Data ---
-                        const formData = new FormData(e.target);
-                        const json = JSON.stringify(Object.fromEntries(formData.entries()));
-                        
-                        const name = formData.get('Site Name');
-                        const url = formData.get('Site URL');
-                        const reason = formData.get('Reason');
-                        
-                        // --- 2. Create Promises ---
-                        
-                        // Promise 1: Firestore
-                        const firestorePromise = addDoc(collection(db, 'suggestions'), {
-                            name: name,
-                            url: url,
-                            reason: reason,
-                            submittedAt: serverTimestamp(),
-                            status: 'pending'
-                        });
-
-                        // Promise 2: Web3Forms
-                        const web3FormsPromise = fetch('https://api.web3forms.com/submit', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json'
-                            },
-                            body: json
-                        });
-
-                        // --- 3. Run in Parallel ---
-                        const [firestoreResult, web3FormsResponse] = await Promise.all([
-                            firestorePromise,
-                            web3FormsPromise
-                        ]);
-
-                        // --- 4. Check Web3Forms Result (optional) ---
-                        const web3Result = await web3FormsResponse.json();
-                        if (!web3Result.success) {
-                            console.warn("Web3Forms email failed, but suggestion was saved to queue.", web3Result);
-                        }
-
-                        // --- 5. Success (as long as Firestore worked) ---
-                        resultEl.innerHTML = "Suggestion submitted successfully! Thank you.";
-                        resultEl.classList.add('text-green-500');
-                        e.target.reset();
-                        setTimeout(() => {
-                            hideModal(suggestionModal);
-                            resultEl.innerHTML = "";
-                        }, 1000);
-
-                    } catch (error) {
-                        // This will catch if EITHER promise fails
-                        console.error("Error submitting suggestion:", error);
-                        resultEl.innerHTML = "An error occurred while submitting.";
-                        resultEl.classList.add('text-red-500');
-                    }
-                });
-                
-                window.addEventListener('scroll', () => toTopBtn.classList.toggle('hidden', window.scrollY <= 300));
-                toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-                
-                const showModal = (modal) => modal.classList.replace('hidden', 'flex');
-                const hideModal = (modal) => modal.classList.replace('flex', 'hidden');
+        // --- AUTH & INIT ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                userUid = user.uid;
+                showSkeletons();
+                loadResources();
+            } else {
+                signInAnonymously(auth).catch(err => console.error("Auth Error", err));
             }
         });
+
+        // --- CORE FUNCTIONS ---
+        function showSkeletons() {
+             const grid = document.getElementById('resourceGrid');
+             let html = '';
+             for(let i=0; i<8; i++) {
+                 html += `
+                    <div class="glass-panel rounded-2xl p-6 h-48 animate-pulse">
+                        <div class="flex justify-between mb-4">
+                            <div class="h-6 w-32 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                            <div class="h-6 w-6 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+                        </div>
+                        <div class="h-4 w-full bg-gray-200 dark:bg-gray-800 rounded mb-2"></div>
+                        <div class="h-4 w-2/3 bg-gray-200 dark:bg-gray-800 rounded"></div>
+                    </div>`;
+             }
+             grid.innerHTML = html;
+        }
+
+        async function loadResources() {
+            try {
+                const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
+                const snap = await getDocs(q);
+                allResources = snap.docs.map(doc => ({ 
+                    id: doc.id, 
+                    ...doc.data(),
+                    categories: doc.data().categories || [],
+                    subcategories: doc.data().subcategories || [],
+                    createdAtVal: doc.data().createdAt?.seconds || 0
+                }));
+                filterResources(true); 
+            } catch (err) {
+                console.error(err);
+                document.getElementById('resourceGrid').innerHTML = `<div class="col-span-full text-center text-red-400 py-10">Failed to load resources.</div>`;
+            }
+        }
+
+        function renderResources(data, append = false) {
+            const grid = document.getElementById('resourceGrid');
+            const loadMoreBtn = document.getElementById('paginationContainer');
+            document.getElementById('resourceCount').innerText = filteredResources.length;
+
+            if (!append) grid.innerHTML = '';
+            
+            if (data.length === 0 && !append) {
+                grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-16"><i class="fas fa-search text-5xl mb-4 opacity-20"></i><p>No resources found matching your criteria.</p></div>`;
+                loadMoreBtn.classList.add('hidden');
+                return;
+            }
+
+            const getCatColor = (cat) => {
+                const map = {
+                    entertainment: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300',
+                    academics: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300',
+                    notes: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300',
+                    coding: 'bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-300',
+                };
+                return map[cat] || 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300';
+            };
+
+            data.forEach((r, index) => {
+                const isFav = favorites.includes(r.id);
+                const isNew = (Date.now()/1000 - r.createdAtVal) < (7*86400); 
+                const hasVoted = r.votedBy?.includes(userUid);
+
+                const card = document.createElement('div');
+                card.className = 'glass-panel rounded-2xl p-5 relative flex flex-col h-full group card-enter';
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1 pr-2">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-lg font-bold dark:text-white leading-tight group-hover:text-purple-400 transition cursor-pointer" onclick="window.open('${r.url}', '_blank')">${r.name}</h3>
+                                ${r.isVerified ? '<i class="fas fa-check-circle text-blue-400 text-xs" title="Official/Verified"></i>' : ''}
+                                ${isNew ? '<span class="badge badge-new">NEW</span>' : ''}
+                            </div>
+                        </div>
+                        <button onclick="toggleFav('${r.id}')" class="transition transform hover:scale-110">
+                            <i id="fav-icon-${r.id}" class="${isFav ? 'fas text-red-500' : 'far text-gray-400'} fa-heart text-lg"></i>
+                        </button>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2 flex-grow cursor-pointer" onclick="window.open('${r.url}', '_blank')">
+                        ${r.description || 'No description available.'}
+                    </p>
+
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${r.categories.slice(0, 3).map(c => `<span class="badge ${getCatColor(c)}">${c}</span>`).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+                        <div class="flex items-center gap-1">
+                            <button id="vote-btn-${r.id}" onclick="handleVote('${r.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${hasVoted ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200'} transition text-sm font-semibold">
+                                <i class="fas fa-arrow-up"></i> <span id="vote-count-${r.id}">${r.votes || 0}</span>
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                             <button onclick="copyLink('${r.url}')" class="p-2 text-gray-400 hover:text-green-400 transition" title="Copy Link"><i class="fas fa-link"></i></button>
+                             <button onclick="openReport('${r.id}', '${r.name.replace(/'/g, "\\'")}')" class="p-2 text-gray-400 hover:text-red-400 transition" title="Report"><i class="fas fa-flag"></i></button>
+                             <a href="${r.url}" target="_blank" class="px-4 py-1.5 bg-gray-900 dark:bg-white text-white dark:text-black rounded-lg text-sm font-bold hover:opacity-80 transition">Visit</a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            const totalShown = currentPage * ITEMS_PER_PAGE;
+            if (totalShown < filteredResources.length) {
+                loadMoreBtn.classList.remove('hidden');
+            } else {
+                loadMoreBtn.classList.add('hidden');
+            }
+        }
+
+        const filterResources = (resetPagination = false) => {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const mainCat = document.getElementById('filterSelect').value;
+            const sort = document.getElementById('sortSelect').value;
+
+            const subContainer = document.getElementById('subFilterContainer');
+            if (mainCat === 'entertainment') {
+                subContainer.classList.remove('hidden');
+                const subCats = new Set();
+                allResources.filter(r => r.categories.includes('entertainment')).forEach(r => r.subcategories.forEach(s => subCats.add(s)));
+                
+                let html = `<button onclick="setSubFilter('all')" class="sub-filter-btn px-3 py-1 rounded-full text-xs border border-gray-600 text-gray-400 hover:bg-white/10 ${activeSubFilter === 'all' ? 'active' : ''}">All</button>`;
+                subCats.forEach(sc => {
+                    html += `<button onclick="setSubFilter('${sc}')" class="sub-filter-btn px-3 py-1 rounded-full text-xs border border-gray-600 text-gray-400 hover:bg-white/10 capitalize ${activeSubFilter === sc ? 'active' : ''}">${sc}</button>`;
+                });
+                subContainer.innerHTML = html;
+            } else {
+                subContainer.classList.add('hidden');
+                activeSubFilter = 'all';
+            }
+
+            filteredResources = allResources.filter(r => {
+                const matchesSearch = r.name.toLowerCase().includes(term) || (r.description||'').toLowerCase().includes(term);
+                const matchesMainCat = mainCat === 'all' || 
+                                       (mainCat === 'favorites' && favorites.includes(r.id)) || 
+                                       r.categories.includes(mainCat);
+                const matchesSubCat = activeSubFilter === 'all' || r.subcategories.includes(activeSubFilter);
+                return matchesSearch && matchesMainCat && matchesSubCat;
+            });
+
+            filteredResources.sort((a, b) => {
+                if (sort === 'popular') return (parseInt(b.votes) || 0) - (parseInt(a.votes) || 0);
+                if (sort === 'newest') return (b.createdAtVal || 0) - (a.createdAtVal || 0);
+                if (sort === 'alpha') return a.name.localeCompare(b.name);
+                return 0;
+            });
+
+            if(resetPagination) currentPage = 1;
+            const paginatedItems = filteredResources.slice(0, currentPage * ITEMS_PER_PAGE);
+            renderResources(paginatedItems);
+        };
+
+        // --- EVENTS ---
+        document.getElementById('loadMoreBtn').addEventListener('click', () => {
+            currentPage++;
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = currentPage * ITEMS_PER_PAGE;
+            const nextBatch = filteredResources.slice(start, end);
+            renderResources(nextBatch, true);
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            filterResources(true); 
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if(query.length > 2) {
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        await addDoc(collection(db, 'stats_search'), { term: query, timestamp: serverTimestamp() });
+                    } catch(err) { console.error(err); }
+                }, 2000);
+            }
+        });
+
+        window.setSubFilter = (sub) => { activeSubFilter = sub; filterResources(true); };
+        
+        // Listen for hidden input change (from custom dropdown)
+        document.getElementById('filterSelect').addEventListener('change', () => filterResources(true));
+        document.getElementById('sortSelect').addEventListener('change', () => filterResources(true));
+
+        // --- ACTIONS ---
+        window.toggleFav = (id) => {
+            if(favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+            else favorites.push(id);
+            localStorage.setItem('vsh_favorites', JSON.stringify(favorites));
+            
+            const icon = document.getElementById(`fav-icon-${id}`);
+            if(icon) {
+                icon.className = favorites.includes(id) ? 'fas fa-heart text-red-500 text-lg' : 'far fa-heart text-gray-400 text-lg';
+            }
+            if(document.getElementById('filterSelect').value === 'favorites') filterResources(true);
+            showToast(favorites.includes(id) ? 'Added to Favorites' : 'Removed from Favorites');
+        };
+
+        window.handleVote = async (id) => {
+            if (!userUid) return;
+            const res = allResources.find(r => r.id === id);
+            const btn = document.getElementById(`vote-btn-${id}`);
+            const countSpan = document.getElementById(`vote-count-${id}`);
+            
+            btn.disabled = true;
+            const hasVoted = res.votedBy?.includes(userUid);
+            const ref = doc(db, 'resources', id);
+
+            try {
+                if(hasVoted) {
+                    await updateDoc(ref, { votes: increment(-1), votedBy: arrayRemove(userUid) });
+                    res.votes = (res.votes || 0) - 1;
+                    res.votedBy = res.votedBy.filter(u => u !== userUid);
+                } else {
+                    await updateDoc(ref, { votes: increment(1), votedBy: arrayUnion(userUid) });
+                    res.votes = (res.votes || 0) + 1;
+                    if(!res.votedBy) res.votedBy = [];
+                    res.votedBy.push(userUid);
+                }
+                countSpan.innerText = res.votes;
+                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition text-sm font-semibold ${!hasVoted ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`;
+            } catch(e) { console.error(e); showToast('Vote failed', 'error'); } 
+            finally { btn.disabled = false; }
+        };
+
+        window.copyLink = (url) => {
+            navigator.clipboard.writeText(url);
+            showToast('Link copied to clipboard!');
+        };
+
+        // --- REPORTING ---
+        window.openReport = (id, name) => {
+            document.getElementById('reportResourceId').value = id;
+            document.getElementById('reportResourceName').value = name;
+            document.getElementById('reportTargetName').innerText = `Reporting: ${name}`;
+            document.getElementById('reportModal').classList.remove('hidden');
+        };
+
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.innerText = 'Sending...';
+            try {
+                await addDoc(collection(db, 'reports'), {
+                    resourceId: document.getElementById('reportResourceId').value,
+                    resourceName: document.getElementById('reportResourceName').value,
+                    reason: document.querySelector('input[name="reportReason"]:checked').value,
+                    reportedAt: serverTimestamp(),
+                    status: 'open'
+                });
+                showToast('Report submitted. Thank you.');
+                document.getElementById('reportModal').classList.add('hidden');
+                e.target.reset();
+            } catch(err) { showToast('Error submitting report', 'error'); }
+            finally { btn.innerText = 'Report'; }
+        });
+
+        // --- SUGGESTIONS ---
+        document.getElementById('suggestionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.disabled = true; btn.innerText = 'Sending...';
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                await addDoc(collection(db, 'suggestions'), {
+                    name: data['Site Name'],
+                    url: data['Site URL'],
+                    reason: data['Reason'],
+                    submittedAt: serverTimestamp(),
+                    status: 'pending'
+                });
+                fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                }).catch(err => console.log("Web3Forms error (non-fatal)", err));
+
+                showToast('Suggestion sent successfully!');
+                document.getElementById('suggestionModal').classList.add('hidden');
+                e.target.reset();
+            } catch(err) { showToast('Error sending suggestion', 'error'); }
+            finally { btn.disabled = false; btn.innerText = originalText; }
+        });
+
+        // --- THEME ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        function updateTheme(isDark) {
+            if(isDark) {
+                document.documentElement.classList.add('dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+            }
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        themeBtn.addEventListener('click', () => {
+            updateTheme(!document.documentElement.classList.contains('dark'));
+        });
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            updateTheme(true);
+        }
+
+        // --- ANNOUNCEMENT ---
+        onSnapshot(doc(db, 'settings', 'config'), (doc) => {
+            if(doc.exists()) {
+                const d = doc.data();
+                const banner = document.getElementById('announcement-banner');
+                if(d.showAnnouncement && d.announcementText) {
+                    document.getElementById('announcement-text').innerText = d.announcementText;
+                    banner.classList.remove('hidden');
+                    banner.className = `relative z-50 px-4 py-3 text-center text-sm font-medium animate-slide-up shadow-lg flex items-center justify-center gap-2`;
+                    
+                    if(d.announcementType === 'error') banner.classList.add('bg-red-500', 'text-white');
+                    else if(d.announcementType === 'success') banner.classList.add('bg-green-500', 'text-white');
+                    else if(d.announcementType === 'warning') banner.classList.add('bg-yellow-400', 'text-black');
+                    else banner.classList.add('bg-blue-500', 'text-white');
+                } else {
+                    banner.classList.add('hidden');
+                }
+            }
+        });
+        document.getElementById('close-announcement').addEventListener('click', () => document.getElementById('announcement-banner').classList.add('hidden'));
+
+        function showToast(msg, type='success') {
+            const t = document.createElement('div');
+            t.className = `pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-md transform transition-all duration-300 translate-y-10 opacity-0 ${type==='error'?'bg-red-500/90 text-white':'bg-white/90 text-gray-800 dark:bg-gray-800/90 dark:text-white'}`;
+            t.innerHTML = `<i class="${type==='error'?'fas fa-exclamation-circle':'fas fa-check-circle'} text-lg ${type==='success'?'text-green-500':''}"></i> <span class="font-medium">${msg}</span>`;
+            document.getElementById('toast-container').appendChild(t);
+            requestAnimationFrame(() => t.classList.remove('translate-y-10', 'opacity-0'));
+            setTimeout(() => {
+                t.classList.add('opacity-0', 'translate-y-10');
+                setTimeout(() => t.remove(), 300);
+            }, 3000);
+        }
+
+        const toTopBtn = document.getElementById('toTopBtn');
+        window.addEventListener('scroll', () => {
+            if(window.scrollY > 300) toTopBtn.classList.replace('hidden', 'flex');
+            else toTopBtn.classList.replace('flex', 'hidden');
+        });
+        toTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
     </script>
 </body>
 </html>

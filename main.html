@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Hub Admin | Command Center</title>
+    <link rel="icon" type="image/png" href="assets/flaticon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        dark: { 800: '#1e1e2e', 900: '#11111b', 700: '#313244' },
+                        accent: { 500: '#cba6f7', 600: '#b4befe' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #11111b;
+            background-image: radial-gradient(circle at 50% 0%, #313244 0%, #11111b 70%);
+            color: #cdd6f4;
+            overflow-x: hidden;
+        }
+
+        /* Glass Effect */
+        .glass-panel {
+            background: rgba(30, 30, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-link {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-link.active {
+            background: rgba(203, 166, 247, 0.1);
+            border-left-color: #cba6f7;
+            color: #cba6f7;
+        }
+
+        .glass-input {
+            background: rgba(17, 17, 27, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #cba6f7;
+            box-shadow: 0 0 0 2px rgba(203, 166, 247, 0.2);
+        }
+
+        /* Table Styles */
+        .custom-table th { background: rgba(0, 0, 0, 0.3); text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.75rem; }
+        .custom-table tr:hover { background: rgba(255, 255, 255, 0.03); }
+        .custom-table td { border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #45475a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #585b70; }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden text-sm md:text-base">
+
+    <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3"></div>
+
+    <div id="loginSection" class="fixed inset-0 z-50 flex items-center justify-center bg-[#11111b] bg-opacity-95">
+        <div class="glass-panel p-8 rounded-2xl w-full max-w-md shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+            <h1 class="text-3xl font-bold text-white mb-2 text-center"><i class="fas fa-fingerprint text-purple-400"></i> Admin Access</h1>
+            <p class="text-gray-400 text-center mb-8">Authenticate to access Site Hub core.</p>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Email Address</label>
+                    <input type="email" id="loginEmail" required class="w-full glass-input rounded-lg p-3">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase">Password</label>
+                    <input type="password" id="loginPassword" required class="w-full glass-input rounded-lg p-3">
+                </div>
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-purple-900/20">
+                    Initialize Session
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="adminLayout" class="hidden w-full h-full flex">
+        
+        <aside class="w-64 bg-[#181825] flex-shrink-0 flex flex-col border-r border-white/5 hidden md:flex">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-white tracking-tight">Site<span class="text-purple-400">Hub</span></h1>
+                <p class="text-xs text-gray-500 mt-1">Admin Dashboard v2.0</p>
+            </div>
+            
+            <nav class="flex-1 px-4 space-y-2">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-link active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white">
+                    <i class="fas fa-chart-pie w-5 text-center"></i> Dashboard
+                </button>
+                <button onclick="switchTab('resources')" id="nav-resources" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white">
+                    <i class="fas fa-database w-5 text-center"></i> Resources
+                </button>
+                <button onclick="switchTab('inbox')" id="nav-inbox" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white">
+                    <i class="fas fa-inbox w-5 text-center"></i> Inbox
+                    <span id="badgeInbox" class="ml-auto bg-red-500/20 text-red-300 text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="sidebar-link w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-white/5 hover:text-white">
+                    <i class="fas fa-sliders-h w-5 text-center"></i> Settings
+                </button>
+            </nav>
+
+            <div class="p-4 border-t border-white/5">
+                <div class="flex items-center gap-3 mb-4 px-2">
+                    <div class="w-8 h-8 rounded-full bg-purple-600/30 flex items-center justify-center text-purple-300">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-medium text-white truncate" id="adminEmailDisplay">Admin</p>
+                        <p class="text-xs text-green-400">Online</p>
+                    </div>
+                </div>
+                <button id="logoutButton" class="w-full bg-red-500/10 hover:bg-red-500/20 text-red-400 py-2 rounded-lg text-sm transition border border-red-500/20">
+                    <i class="fas fa-sign-out-alt mr-2"></i> Terminate
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col h-full relative">
+            <header class="md:hidden h-16 bg-[#181825] border-b border-white/5 flex items-center justify-between px-4">
+                <span class="font-bold text-lg">SiteHub Admin</span>
+                <button onclick="document.querySelector('aside').classList.toggle('hidden'); document.querySelector('aside').classList.toggle('absolute'); document.querySelector('aside').classList.toggle('z-50'); document.querySelector('aside').classList.toggle('h-full');" class="text-gray-300"><i class="fas fa-bars text-xl"></i></button>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-4 md:p-8 relative">
+                
+                <div id="tab-dashboard" class="tab-content active space-y-6">
+                    <h2 class="text-2xl font-bold text-white">Overview</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-blue-500">
+                            <p class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Total Resources</p>
+                            <div class="flex justify-between items-end">
+                                <h3 class="text-3xl font-bold text-white" id="statTotalResources">0</h3>
+                                <i class="fas fa-link text-blue-500/20 text-4xl"></i>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-green-500">
+                            <p class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Total Engagements</p>
+                            <div class="flex justify-between items-end">
+                                <h3 class="text-3xl font-bold text-white" id="statTotalVotes">0</h3>
+                                <i class="fas fa-heart text-green-500/20 text-4xl"></i>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-amber-500">
+                            <p class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Pending Suggestions</p>
+                            <div class="flex justify-between items-end">
+                                <h3 class="text-3xl font-bold text-white" id="statPendingSuggestions">0</h3>
+                                <i class="fas fa-lightbulb text-amber-500/20 text-4xl"></i>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl border-l-4 border-red-500">
+                            <p class="text-gray-400 text-xs uppercase font-bold tracking-wider mb-1">Active Reports</p>
+                            <div class="flex justify-between items-end">
+                                <h3 class="text-3xl font-bold text-white" id="statActiveReports">0</h3>
+                                <i class="fas fa-flag text-red-500/20 text-4xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-xl p-6">
+                            <h3 class="font-semibold text-white mb-4 flex items-center gap-2"><i class="fas fa-chart-pie text-purple-400"></i> Category Distribution</h3>
+                            <div class="h-64 relative"><canvas id="categoryChart"></canvas></div>
+                        </div>
+                        <div class="glass-panel rounded-xl p-6">
+                            <h3 class="font-semibold text-white mb-4 flex items-center gap-2"><i class="fas fa-chart-bar text-blue-400"></i> Vote Metrics</h3>
+                            <div class="h-64 relative"><canvas id="votesChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-resources" class="tab-content space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h2 class="text-2xl font-bold text-white">Resource Database</h2>
+                        <button onclick="document.getElementById('addResourceModal').classList.remove('hidden')" 
+                            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-lg shadow-purple-900/20 flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Add New
+                        </button>
+                    </div>
+
+                    <div class="glass-panel rounded-xl overflow-hidden flex flex-col h-[calc(100vh-200px)]">
+                        <div class="p-4 border-b border-white/5 flex flex-col md:flex-row gap-3">
+                            <div class="relative flex-1">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                                <input type="text" id="searchResources" placeholder="Search by name, URL, or tags..." class="w-full glass-input rounded-lg py-2 pl-10 pr-4 text-sm">
+                            </div>
+                            <select id="filterResources" class="glass-input rounded-lg px-4 py-2 text-sm w-full md:w-48">
+                                <option value="all">All Categories</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="academics">Academics</option>
+                                <option value="notes">Notes & PYQs</option>
+                                <option value="productivity">Productivity</option>
+                                <option value="coding">Coding & Dev</option>
+                                <option value="design">Design</option>
+                                <option value="utilities">Utilities</option>
+                            </select>
+                        </div>
+
+                        <div class="overflow-auto flex-1">
+                            <table class="w-full text-left custom-table">
+                                <thead class="sticky top-0 z-10 text-gray-400 bg-[#1e1e2e]">
+                                    <tr>
+                                        <th class="p-4">Name / URL</th>
+                                        <th class="p-4">Category</th>
+                                        <th class="p-4">Engagement</th>
+                                        <th class="p-4 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resourcesTableBody" class="text-gray-300 text-sm">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-inbox" class="tab-content space-y-6">
+                    <h2 class="text-2xl font-bold text-white">Inbox & Alerts</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-xl p-6 min-h-[500px]">
+                            <h3 class="text-lg font-bold text-red-400 mb-4 flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle"></i> Reports
+                                <span id="countReports" class="bg-red-500/10 text-red-400 text-xs px-2 py-0.5 rounded-full ml-auto">0</span>
+                            </h3>
+                            <div id="reportsList" class="space-y-3">
+                                <div class="text-center text-gray-500 py-10">No active reports.</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel rounded-xl p-6 min-h-[500px]">
+                            <h3 class="text-lg font-bold text-amber-400 mb-4 flex items-center gap-2">
+                                <i class="fas fa-lightbulb"></i> Suggestions
+                                <span id="countSuggestions" class="bg-amber-500/10 text-amber-400 text-xs px-2 py-0.5 rounded-full ml-auto">0</span>
+                            </h3>
+                            <div id="suggestionsList" class="space-y-3">
+                                <div class="text-center text-gray-500 py-10">No pending suggestions.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-settings" class="tab-content space-y-6 max-w-3xl">
+                    <h2 class="text-2xl font-bold text-white">System Configuration</h2>
+
+                    <div class="glass-panel rounded-xl p-6">
+                        <h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-bullhorn text-blue-400 mr-2"></i> Global Announcement</h3>
+                        <form id="announcementForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Banner Message</label>
+                                <input type="text" id="announcementText" placeholder="System maintenance in 1 hour..." class="w-full glass-input rounded-lg p-2.5">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-1">Alert Type</label>
+                                    <select id="announcementType" class="w-full glass-input rounded-lg p-2.5">
+                                        <option value="info">Info (Blue)</option>
+                                        <option value="success">Success (Green)</option>
+                                        <option value="warning">Warning (Yellow)</option>
+                                        <option value="error">Critical (Red)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-end">
+                                    <label class="flex items-center space-x-3 cursor-pointer p-2.5 bg-white/5 rounded-lg w-full hover:bg-white/10 transition">
+                                        <input type="checkbox" id="announcementActive" class="w-5 h-5 text-purple-600 rounded focus:ring-purple-500 bg-gray-700 border-gray-600">
+                                        <span class="text-gray-200">Enable Banner</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="pt-2">
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-semibold transition">Save Config</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-6 border-l-4 border-green-500">
+                        <h3 class="text-lg font-semibold text-white mb-2">Data Backup</h3>
+                        <p class="text-gray-400 text-sm mb-4">Export all resources to a JSON file for safety.</p>
+                        <button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                            <i class="fas fa-download mr-2"></i> Download Database
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div id="addResourceModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-2xl rounded-2xl shadow-2xl overflow-y-auto max-h-[90vh] animate-in fade-in zoom-in duration-200">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 class="text-xl font-bold text-white" id="modalTitle">Add Resource</h2>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i class="fas fa-times text-lg"></i></button>
+            </div>
+            <form id="resourceForm" class="p-6 space-y-4">
+                <input type="hidden" id="resourceId"> <input type="hidden" id="suggestionRefId"> 
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-1 md:col-span-2">
+                         <label class="block text-xs font-semibold text-gray-400 mb-1">URL</label>
+                         <div class="flex gap-2">
+                             <input type="url" id="formUrl" required class="w-full glass-input rounded-lg p-2.5" placeholder="https://...">
+                             <button type="button" id="fetchMetaBtn" class="bg-white/10 hover:bg-white/20 text-white px-3 rounded-lg" title="Auto-fill info">
+                                 <i class="fas fa-magic"></i>
+                             </button>
+                         </div>
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Name</label>
+                        <input type="text" id="formName" required class="w-full glass-input rounded-lg p-2.5">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Description</label>
+                        <textarea id="formDescription" rows="3" class="w-full glass-input rounded-lg p-2.5"></textarea>
+                    </div>
+                    
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-400 mb-2">Categories (Select Multiple)</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <script>
+                                const cats = ['entertainment', 'academics', 'notes', 'productivity', 'coding', 'design', 'utilities', 'student-projects'];
+                                cats.forEach(c => {
+                                    document.write(`
+                                        <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white/5 rounded hover:bg-white/10 transition">
+                                            <input type="checkbox" value="${c}" class="cat-check w-4 h-4 rounded bg-gray-700 border-gray-600 text-purple-600 focus:ring-purple-500">
+                                            <span class="text-xs text-gray-200 capitalize">${c.replace('-', ' ')}</span>
+                                        </label>
+                                    `);
+                                });
+                            </script>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Subcategories (Comma separated)</label>
+                        <input type="text" id="formSubcats" placeholder="e.g. math, calc, graph" class="w-full glass-input rounded-lg p-2.5">
+                    </div>
+                    
+                    <div class="flex flex-col gap-2">
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Status</label>
+                        <div class="flex gap-4">
+                             <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="formVerified" class="w-4 h-4 rounded bg-gray-700 text-blue-500">
+                                <span class="text-sm text-blue-300"><i class="fas fa-check-circle"></i> Verified</span>
+                            </label>
+                        </div>
+                         <div id="voteEditContainer" class="hidden mt-2">
+                            <label class="text-xs text-gray-500">Manual Vote Adjustment</label>
+                            <input type="number" id="formVotes" class="w-20 glass-input rounded p-1 text-sm">
+                         </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm">Cancel</button>
+                    <button type="submit" class="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm shadow-lg">Save Resource</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="confirmModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+        <div class="glass-panel p-6 rounded-xl max-w-sm w-full text-center">
+            <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fas fa-trash-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Confirm Deletion</h3>
+            <p id="confirmText" class="text-gray-400 text-sm mb-6">Are you sure?</p>
+            <div class="flex justify-center gap-3">
+                <button onclick="document.getElementById('confirmModal').classList.add('hidden')" class="px-4 py-2 rounded-lg bg-gray-700 text-white">Cancel</button>
+                <button id="confirmActionBtn" class="px-4 py-2 rounded-lg bg-red-600 text-white font-bold">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
+            authDomain: "site-hub-29fb2.firebaseapp.com",
+            projectId: "site-hub-29fb2",
+            storageBucket: "site-hub-29fb2.firebasestorage.app",
+            messagingSenderId: "373988520340",
+            appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
+            measurementId: "G-DDEMB3X2XQ"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        const ADMIN_UID = "pc6zZYQM04ZS6488xkZd2GqrxsI2";
+
+        let allResources = [];
+        let chartInstances = {};
+        
+        // --- AUTH LOGIC ---
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === ADMIN_UID) {
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('adminLayout').classList.remove('hidden');
+                document.getElementById('adminEmailDisplay').textContent = user.email;
+                initDashboard();
+            } else {
+                document.getElementById('loginSection').classList.remove('hidden');
+                document.getElementById('adminLayout').classList.add('hidden');
+                if(user) signOut(auth); // Kick out non-admins
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+                showToast("Welcome back, Commander.", "success");
+            } catch (err) { showToast(err.message, "error"); }
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', () => signOut(auth));
+
+        // --- UI NAVIGATION ---
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(`nav-${tabId}`).classList.add('active');
+            
+            // Mobile: close sidebar on selection
+            if(window.innerWidth < 768) document.querySelector('aside').classList.add('hidden');
+        };
+
+        // --- DASHBOARD INIT ---
+        async function initDashboard() {
+            await Promise.all([loadResources(), loadInbox(), loadSettings()]);
+        }
+
+        // --- RESOURCES LOGIC ---
+        async function loadResources() {
+            const tbody = document.getElementById('resourcesTableBody');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl"></i></td></tr>';
+            
+            try {
+                const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
+                const snap = await getDocs(q);
+                allResources = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                
+                // Update Stats
+                document.getElementById('statTotalResources').innerText = allResources.length;
+                document.getElementById('statTotalVotes').innerText = allResources.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+                
+                renderResourcesTable(allResources);
+                renderCharts();
+            } catch (err) { console.error(err); tbody.innerHTML = '<tr><td colspan="4" class="text-center text-red-400">Error loading data.</td></tr>'; }
+        }
+
+        function renderResourcesTable(data) {
+            const tbody = document.getElementById('resourcesTableBody');
+            tbody.innerHTML = '';
+            
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">No resources found.</td></tr>';
+                return;
+            }
+
+            data.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-white/5 transition hover:bg-white/5';
+                
+                // Categories Badges
+                const catsHtml = (r.categories || []).map(c => 
+                    `<span class="inline-block bg-white/10 text-xs px-2 py-0.5 rounded mr-1 mb-1 capitalize text-gray-300">${c}</span>`
+                ).join('');
+
+                tr.innerHTML = `
+                    <td class="p-4">
+                        <div class="font-semibold text-white flex items-center gap-2">
+                            ${r.name}
+                            ${r.isVerified ? '<i class="fas fa-check-circle text-blue-400 text-xs" title="Verified"></i>' : ''}
+                        </div>
+                        <div class="text-xs text-blue-300 truncate max-w-[200px] cursor-pointer hover:underline" onclick="window.open('${r.url}', '_blank')">${r.url}</div>
+                    </td>
+                    <td class="p-4 max-w-xs">${catsHtml}</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400 font-mono font-bold">${r.votes || 0}</span> <span class="text-xs text-gray-500">votes</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-right">
+                        <button onclick="editResource('${r.id}')" class="text-gray-400 hover:text-white px-2 transition"><i class="fas fa-pen"></i></button>
+                        <button onclick="deleteResource('${r.id}')" class="text-gray-400 hover:text-red-400 px-2 transition"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Filtering
+        const filterFn = () => {
+            const text = document.getElementById('searchResources').value.toLowerCase();
+            const cat = document.getElementById('filterResources').value;
+            const filtered = allResources.filter(r => {
+                const matchesText = r.name.toLowerCase().includes(text) || r.url.includes(text);
+                const matchesCat = cat === 'all' || (r.categories && r.categories.includes(cat));
+                return matchesText && matchesCat;
+            });
+            renderResourcesTable(filtered);
+        };
+        document.getElementById('searchResources').addEventListener('input', filterFn);
+        document.getElementById('filterResources').addEventListener('change', filterFn);
+
+        // Charts
+        function renderCharts() {
+            const ctx1 = document.getElementById('categoryChart');
+            const ctx2 = document.getElementById('votesChart');
+            
+            // Process Data
+            const catCounts = {}; 
+            const catVotes = {};
+            allResources.forEach(r => {
+                (r.categories || []).forEach(c => {
+                    catCounts[c] = (catCounts[c] || 0) + 1;
+                    catVotes[c] = (catVotes[c] || 0) + (r.votes || 0);
+                });
+            });
+            const labels = Object.keys(catCounts);
+
+            if (chartInstances.cat) chartInstances.cat.destroy();
+            if (chartInstances.vote) chartInstances.vote.destroy();
+
+            Chart.defaults.color = '#a6adc8';
+            Chart.defaults.borderColor = '#313244';
+
+            chartInstances.cat = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.map(l => l.toUpperCase()),
+                    datasets: [{
+                        data: Object.values(catCounts),
+                        backgroundColor: ['#cba6f7', '#89b4fa', '#a6e3a1', '#f9e2af', '#fab387', '#f38ba8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } } }
+            });
+
+            chartInstances.vote = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels.map(l => l.toUpperCase()),
+                    datasets: [{
+                        label: 'Votes',
+                        data: Object.values(catVotes),
+                        backgroundColor: '#89b4fa',
+                        borderRadius: 4
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { x: { grid: { display: false } } } }
+            });
+        }
+
+        // --- CRUD OPERATIONS ---
+        window.closeModal = () => {
+            document.getElementById('addResourceModal').classList.add('hidden');
+            document.getElementById('resourceForm').reset();
+            document.querySelectorAll('.cat-check').forEach(c => c.checked = false);
+            document.getElementById('resourceId').value = '';
+            document.getElementById('suggestionRefId').value = '';
+            document.getElementById('voteEditContainer').classList.add('hidden');
+        };
+
+        window.editResource = (id) => {
+            const r = allResources.find(x => x.id === id);
+            if (!r) return;
+            document.getElementById('modalTitle').innerText = "Edit Resource";
+            document.getElementById('resourceId').value = id;
+            document.getElementById('formName').value = r.name;
+            document.getElementById('formUrl').value = r.url;
+            document.getElementById('formDescription').value = r.description || '';
+            document.getElementById('formSubcats').value = (r.subcategories || []).join(', ');
+            document.getElementById('formVerified').checked = r.isVerified || false;
+            document.getElementById('formVotes').value = r.votes || 0;
+            document.getElementById('voteEditContainer').classList.remove('hidden');
+            
+            // Set Categories
+            document.querySelectorAll('.cat-check').forEach(cb => {
+                cb.checked = (r.categories || []).includes(cb.value);
+            });
+            
+            document.getElementById('addResourceModal').classList.remove('hidden');
+        };
+
+        document.getElementById('resourceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('resourceId').value;
+            const suggId = document.getElementById('suggestionRefId').value;
+            const data = {
+                name: document.getElementById('formName').value,
+                url: document.getElementById('formUrl').value,
+                description: document.getElementById('formDescription').value,
+                categories: Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value),
+                subcategories: document.getElementById('formSubcats').value.split(',').map(s => s.trim()).filter(s => s),
+                isVerified: document.getElementById('formVerified').checked
+            };
+
+            if (data.categories.length === 0) { showToast("Select at least 1 category", "error"); return; }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                if (id) {
+                    // Update
+                    data.votes = parseInt(document.getElementById('formVotes').value) || 0;
+                    await updateDoc(doc(db, 'resources', id), data);
+                    showToast("Resource updated");
+                } else {
+                    // Create
+                    data.votes = 0;
+                    data.votedBy = [];
+                    data.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'resources'), data);
+                    if (suggId) await deleteDoc(doc(db, 'suggestions', suggId));
+                    showToast("Resource added");
+                }
+                closeModal();
+                initDashboard();
+            } catch (err) { showToast(err.message, "error"); }
+            finally { btn.disabled = false; btn.innerText = "Save Resource"; }
+        });
+
+        window.deleteResource = (id) => {
+            const btn = document.getElementById('confirmActionBtn');
+            btn.onclick = async () => {
+                try {
+                    await deleteDoc(doc(db, 'resources', id));
+                    document.getElementById('confirmModal').classList.add('hidden');
+                    showToast("Deleted successfully");
+                    initDashboard();
+                } catch (err) { showToast("Delete failed", "error"); }
+            };
+            document.getElementById('confirmText').innerText = "This action cannot be undone. Delete this resource?";
+            document.getElementById('confirmModal').classList.remove('hidden');
+        };
+
+        // --- INBOX (Reports & Suggestions) ---
+        async function loadInbox() {
+            // Suggestions
+            const sQ = query(collection(db, 'suggestions'), orderBy('submittedAt', 'desc'));
+            const sSnap = await getDocs(sQ);
+            const sList = document.getElementById('suggestionsList');
+            document.getElementById('statPendingSuggestions').innerText = sSnap.size;
+            document.getElementById('countSuggestions').innerText = sSnap.size;
+            document.getElementById('badgeInbox').innerText = sSnap.size; // Only show suggs in badge for now
+            if (sSnap.size > 0) document.getElementById('badgeInbox').classList.remove('hidden');
+
+            sList.innerHTML = sSnap.empty ? '<div class="text-center text-gray-500 py-10">Clean slate.</div>' : '';
+            sSnap.forEach(d => {
+                const s = d.data();
+                const card = document.createElement('div');
+                card.className = 'bg-white/5 p-4 rounded-lg border border-white/5';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h4 class="font-bold text-white">${s.name}</h4>
+                        <span class="text-xs text-gray-500">${new Date(s.submittedAt?.seconds*1000).toLocaleDateString()}</span>
+                    </div>
+                    <a href="${s.url}" target="_blank" class="text-xs text-blue-400 break-all hover:underline">${s.url}</a>
+                    <p class="text-sm text-gray-300 mt-2 bg-black/20 p-2 rounded italic">"${s.reason || 'No reason provided'}"</p>
+                    <div class="flex gap-2 mt-3">
+                        <button onclick="approveSugg('${d.id}', '${s.name.replace(/'/g, "\\'")}', '${s.url}', '${(s.reason||'').replace(/'/g, "\\'")}')" class="flex-1 bg-green-600/20 hover:bg-green-600/40 text-green-400 py-1.5 rounded text-xs font-bold transition">Approve</button>
+                        <button onclick="rejectSugg('${d.id}')" class="flex-1 bg-red-600/20 hover:bg-red-600/40 text-red-400 py-1.5 rounded text-xs font-bold transition">Reject</button>
+                    </div>
+                `;
+                sList.appendChild(card);
+            });
+
+            // Reports
+            const rQ = query(collection(db, 'reports'), orderBy('reportedAt', 'desc'));
+            const rSnap = await getDocs(rQ);
+            const rList = document.getElementById('reportsList');
+            document.getElementById('statActiveReports').innerText = rSnap.size;
+            document.getElementById('countReports').innerText = rSnap.size;
+
+            rList.innerHTML = rSnap.empty ? '<div class="text-center text-gray-500 py-10">No issues reported.</div>' : '';
+            rSnap.forEach(d => {
+                const r = d.data();
+                const card = document.createElement('div');
+                card.className = 'bg-red-500/5 p-4 rounded-lg border border-red-500/20';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-red-400 uppercase tracking-wider">${r.reason}</span>
+                        <button onclick="dismissReport('${d.id}')" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <p class="text-white font-semibold mb-2">Resource: ${r.resourceName}</p>
+                    <div class="flex gap-2">
+                         <button onclick="editResource('${r.resourceId}')" class="text-xs bg-blue-600/20 text-blue-300 px-3 py-1 rounded hover:bg-blue-600/30">Check Resource</button>
+                    </div>
+                `;
+                rList.appendChild(card);
+            });
+        }
+
+        window.approveSugg = (id, name, url, reason) => {
+            document.getElementById('modalTitle').innerText = "Approve Suggestion";
+            document.getElementById('formName').value = name;
+            document.getElementById('formUrl').value = url;
+            document.getElementById('formDescription').value = reason;
+            document.getElementById('suggestionRefId').value = id;
+            document.getElementById('addResourceModal').classList.remove('hidden');
+        };
+
+        window.rejectSugg = async (id) => {
+             if(confirm("Reject this suggestion permanently?")) {
+                 await deleteDoc(doc(db, 'suggestions', id));
+                 loadInbox();
+                 showToast("Suggestion rejected");
+             }
+        };
+
+        window.dismissReport = async (id) => {
+             await deleteDoc(doc(db, 'reports', id));
+             loadInbox();
+             showToast("Report dismissed");
+        };
+
+        // --- SETTINGS ---
+        async function loadSettings() {
+            try {
+                const docSnap = await getDoc(doc(db, 'settings', 'config'));
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    document.getElementById('announcementText').value = data.announcementText || '';
+                    document.getElementById('announcementType').value = data.announcementType || 'info';
+                    document.getElementById('announcementActive').checked = data.showAnnouncement || false;
+                }
+            } catch (e) { console.log("Settings init error", e); }
+        }
+
+        document.getElementById('announcementForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = document.getElementById('announcementText').value;
+            const type = document.getElementById('announcementType').value;
+            const active = document.getElementById('announcementActive').checked;
+            try {
+                await setDoc(doc(db, 'settings', 'config'), { announcementText: text, announcementType: type, showAnnouncement: active }, { merge: true });
+                showToast("Configuration saved", "success");
+            } catch (err) { showToast("Save failed", "error"); }
+        });
+
+        // --- UTILS ---
+        document.getElementById('fetchMetaBtn').addEventListener('click', async () => {
+            const url = document.getElementById('formUrl').value;
+            if(!url) return showToast("Enter URL first", "error");
+            const btn = document.getElementById('fetchMetaBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            try {
+                const res = await fetch(`https://api.microlink.io?url=${encodeURIComponent(url)}`);
+                const data = await res.json();
+                if(data.status === 'success') {
+                    // document.getElementById('formName').value = data.data.title || ''; // Removed per request
+                    document.getElementById('formDescription').value = data.data.description || '';
+                    showToast("Metadata fetched");
+                }
+            } catch(e) { showToast("Fetch failed", "error"); }
+            finally { btn.innerHTML = originalHTML; }
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allResources, null, 2));
+            const a = document.createElement('a');
+            a.href = dataStr;
+            a.download = `sitehub_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+        });
+
+        function showToast(msg, type = 'success') {
+            const el = document.createElement('div');
+            const color = type === 'success' ? 'border-green-500 text-green-400' : 'border-red-500 text-red-400';
+            el.className = `glass-panel px-4 py-3 rounded-lg border-l-4 ${color} flex items-center gap-3 shadow-lg transform transition-all duration-300 translate-x-full opacity-0`;
+            el.innerHTML = `<i class="fas fa-${type==='success'?'check':'exclamation'}-circle"></i> <span class="text-sm font-medium text-white">${msg}</span>`;
+            document.getElementById('toast-container').appendChild(el);
+            requestAnimationFrame(() => el.classList.remove('translate-x-full', 'opacity-0'));
+            setTimeout(() => {
+                el.classList.add('opacity-0', 'translate-x-10');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
