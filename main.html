@@ -376,9 +376,9 @@
                                 <span class="text-sm text-blue-300"><i class="fas fa-check-circle"></i> Verified</span>
                             </label>
                         </div>
-                         <div id="voteEditContainer" class="hidden mt-2">
-                            <label class="text-xs text-gray-500">Manual Vote Adjustment</label>
-                            <input type="number" id="formVotes" class="w-20 glass-input rounded p-1 text-sm">
+                         <div id="voteEditContainer" class="mt-2">
+                            <label class="text-xs text-gray-500 mb-1 block">Vote Count Adjustment</label>
+                            <input type="number" id="formVotes" placeholder="0" class="w-20 glass-input rounded p-2 text-sm">
                          </div>
                     </div>
                 </div>
@@ -614,7 +614,7 @@
             document.querySelectorAll('.cat-check').forEach(c => c.checked = false);
             document.getElementById('resourceId').value = '';
             document.getElementById('suggestionRefId').value = '';
-            document.getElementById('voteEditContainer').classList.add('hidden');
+            document.getElementById('formVotes').value = '';
             document.getElementById('dynamicSubcatsContainer').innerHTML = '';
             document.getElementById('dynamicSubcatsSection').style.display = 'none';
         };
@@ -670,7 +670,6 @@
             document.getElementById('formDescription').value = r.description || '';
             document.getElementById('formVerified').checked = r.isVerified || false;
             document.getElementById('formVotes').value = r.votes || 0;
-            document.getElementById('voteEditContainer').classList.remove('hidden');
             
             // Set Categories
             document.querySelectorAll('.cat-check').forEach(cb => {
@@ -712,15 +711,17 @@
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
+            // Allow the admin to set explicit initial votes or edit old votes
+            data.votes = parseInt(document.getElementById('formVotes').value) || 0;
+
             try {
                 if (id) {
                     // Update
-                    data.votes = parseInt(document.getElementById('formVotes').value) || 0;
                     await updateDoc(doc(db, 'resources', id), data);
                     showToast("Resource updated");
                 } else {
                     // Create
-                    data.votes = 0;
+                    data.status = 'approved';
                     data.votedBy = [];
                     data.createdAt = serverTimestamp();
                     await addDoc(collection(db, 'resources'), data);

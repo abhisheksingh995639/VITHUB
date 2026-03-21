@@ -223,26 +223,56 @@
             animation: heartPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
+        .thumb-flip {
+            animation: thumbFlip 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            display: inline-block;
+        }
+
+        /* Simple Dropdown Scale Animation */
+        .dropdown-item {
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), background-color 0.2s;
+            transform-origin: center;
+            position: relative;
+            will-change: transform;
+        }
+        .dropdown-item:hover {
+            transform: scale(1.04);
+            background-color: rgba(255, 255, 255, 0.08); /* Slight highlight */
+            z-index: 10;
+        }
+
         /* Number Ticker */
         .ticker-wrap {
             position: relative;
             display: inline-block;
-            height: 1.25rem; /* ~20px to match text line-height */
+            height: 1.25rem;
+            /* ~20px to match text line-height */
             overflow: hidden;
             vertical-align: bottom;
             min-width: 1ch;
             text-align: left;
         }
+
         .ticker-col {
             display: flex;
             flex-direction: column;
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
         .ticker-item {
             display: flex;
             align-items: center;
             height: 1.25rem;
             line-height: 1.25rem;
+        }
+
+        /* Hide scrollbar for dropdown */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
         }
 
         .dark .skeleton-shimmer {
@@ -381,7 +411,7 @@
                                 <span class="font-medium truncate">Favorites</span>
                             </div>
                             <div class="h-px bg-white/10 my-1 mx-4"></div>
-                            <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                            <div class="max-h-60 overflow-y-auto no-scrollbar">
                                 <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
                                     data-value="academics" data-icon="fa-graduation-cap" data-color="text-blue-400">
                                     <i class="fas fa-graduation-cap w-5 text-center text-blue-400 flex-shrink-0"></i>
@@ -896,7 +926,7 @@
                     if (!res.votedBy) res.votedBy = [];
                     res.votedBy.push(userUid);
                 }
-                
+
                 if (!hasVoted) {
                     // Upvote visual animation
                     countSpan.innerHTML += `<span class="ticker-item">${res.votes}</span>`;
@@ -1008,11 +1038,11 @@
         // Initialize theme based on saved preference OR system preference
         const savedTheme = localStorage.getItem('vsh_theme');
         const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        
+
         if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark.matches)) {
-            updateTheme(true, !!savedTheme); 
+            updateTheme(true, !!savedTheme);
         } else {
-            updateTheme(false, !!savedTheme); 
+            updateTheme(false, !!savedTheme);
         }
 
         // Listen for OS theme changes in real-time
