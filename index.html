@@ -7,7 +7,7 @@
     <title>VIT Site Hub | Student Resource Directory</title>
     <meta name="description" content="Curated resources for VIT students. Notes, tools, entertainment, and more.">
     <link rel="icon" type="image/png" href="assets/flaticon.png">
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -71,10 +71,11 @@
 
         .glass-panel:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
         }
+
         .dark .glass-panel:hover {
-            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
             border-color: rgba(203, 166, 247, 0.3);
         }
 
@@ -83,49 +84,199 @@
             opacity: 0;
             animation: slideUp 0.5s ease-out forwards;
         }
-        .card-enter:nth-child(1) { animation-delay: 50ms; }
-        .card-enter:nth-child(2) { animation-delay: 100ms; }
-        .card-enter:nth-child(3) { animation-delay: 150ms; }
-        .card-enter:nth-child(4) { animation-delay: 200ms; }
-        .card-enter:nth-child(5) { animation-delay: 250ms; }
-        .card-enter:nth-child(6) { animation-delay: 300ms; }
-        .card-enter:nth-child(7) { animation-delay: 350ms; }
-        .card-enter:nth-child(8) { animation-delay: 400ms; }
-        .card-enter:nth-child(9) { animation-delay: 450ms; }
-        .card-enter:nth-child(10) { animation-delay: 500ms; }
-        .card-enter:nth-child(11) { animation-delay: 550ms; }
-        .card-enter:nth-child(12) { animation-delay: 600ms; }
+
+        .card-enter:nth-child(1) {
+            animation-delay: 50ms;
+        }
+
+        .card-enter:nth-child(2) {
+            animation-delay: 100ms;
+        }
+
+        .card-enter:nth-child(3) {
+            animation-delay: 150ms;
+        }
+
+        .card-enter:nth-child(4) {
+            animation-delay: 200ms;
+        }
+
+        .card-enter:nth-child(5) {
+            animation-delay: 250ms;
+        }
+
+        .card-enter:nth-child(6) {
+            animation-delay: 300ms;
+        }
+
+        .card-enter:nth-child(7) {
+            animation-delay: 350ms;
+        }
+
+        .card-enter:nth-child(8) {
+            animation-delay: 400ms;
+        }
+
+        .card-enter:nth-child(9) {
+            animation-delay: 450ms;
+        }
+
+        .card-enter:nth-child(10) {
+            animation-delay: 500ms;
+        }
+
+        .card-enter:nth-child(11) {
+            animation-delay: 550ms;
+        }
+
+        .card-enter:nth-child(12) {
+            animation-delay: 600ms;
+        }
 
         /* Inputs */
         .custom-input {
             transition: all 0.2s;
         }
+
         .custom-input:focus {
             outline: none;
             box-shadow: 0 0 0 2px rgba(203, 166, 247, 0.5);
         }
 
         /* Badges */
-        .badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 99px; font-weight: 600; letter-spacing: 0.02em; }
-        .badge-new { background: #f38ba8; color: #11111b; animation: pulse 2s infinite; }
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-new {
+            background: #f38ba8;
+            color: #11111b;
+            animation: pulse 2s infinite;
+        }
 
         /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #45475a; }
-        .dark ::-webkit-scrollbar-thumb:hover { background: #585b70; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #45475a;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #585b70;
+        }
 
         /* Custom Dropdown Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
 
         .sub-filter-btn.active {
             background-color: #cba6f7;
             color: #11111b;
             font-weight: 700;
+        }
+
+        /* Heart Pop Animation */
+        @keyframes heartPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .heart-pop {
+            animation: heartPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Number Ticker */
+        .ticker-wrap {
+            position: relative;
+            display: inline-block;
+            height: 1.25rem; /* ~20px to match text line-height */
+            overflow: hidden;
+            vertical-align: bottom;
+            min-width: 1ch;
+            text-align: left;
+        }
+        .ticker-col {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            height: 1.25rem;
+            line-height: 1.25rem;
+        }
+
+        .dark .skeleton-shimmer {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .skeleton-shimmer::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0) 0,
+                    rgba(255, 255, 255, 0.4) 20%,
+                    rgba(255, 255, 255, 0.8) 60%,
+                    rgba(255, 255, 255, 0) 100%);
+            animation: shimmer 2s infinite;
+        }
+
+        .dark .skeleton-shimmer::after {
+            background-image: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0) 0,
+                    rgba(255, 255, 255, 0.05) 20%,
+                    rgba(255, 255, 255, 0.1) 60%,
+                    rgba(255, 255, 255, 0) 100%);
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
         }
     </style>
 </head>
@@ -133,32 +284,40 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DDEMB3X2XQ"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
 
-  gtag('config', 'G-DDEMB3X2XQ');
+    gtag('config', 'G-DDEMB3X2XQ');
 </script>
 
 <body class="flex flex-col min-h-screen">
 
-    <div id="announcement-banner" class="hidden relative z-[100] px-4 py-3 text-center text-sm font-medium animate-slide-up shadow-lg">
+    <div id="announcement-banner"
+        class="hidden relative z-[100] px-4 py-3 text-center text-sm font-medium animate-slide-up shadow-lg">
         <span id="announcement-text"></span>
-        <button id="close-announcement" class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100"><i class="fas fa-times"></i></button>
+        <button id="close-announcement"
+            class="absolute right-4 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100"><i
+                class="fas fa-times"></i></button>
     </div>
 
     <div id="toast-container" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <nav class="container mx-auto px-6 py-6 flex justify-between items-center z-[60] relative">
         <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">V</div>
-            <span class="text-xl font-bold tracking-tight dark:text-white">Site<span class="text-purple-500">Hub</span></span>
+            <div
+                class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                V</div>
+            <span class="text-xl font-bold tracking-tight dark:text-white">Site<span
+                    class="text-purple-500">Hub</span></span>
         </div>
         <div class="flex gap-4">
-            <button id="theme-toggle" class="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center transition hover:bg-gray-300 dark:hover:bg-white/20">
+            <button id="theme-toggle"
+                class="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/10 flex items-center justify-center transition hover:bg-gray-300 dark:hover:bg-white/20">
                 <i class="fas fa-moon text-gray-700 dark:text-gray-300" id="theme-icon"></i>
             </button>
-            <button onclick="document.getElementById('suggestionModal').classList.remove('hidden')" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-purple-500/20 transition transform hover:scale-105">
+            <button onclick="document.getElementById('suggestionModal').classList.remove('hidden')"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-lg shadow-purple-500/20 transition transform hover:scale-105">
                 <i class="fas fa-plus mr-2"></i> Submit Site
             </button>
         </div>
@@ -167,69 +326,87 @@
     <header class="relative container mx-auto px-6 pt-10 pb-16 text-center z-50">
         <div class="max-w-3xl mx-auto animate-slide-up">
             <h1 class="text-4xl md:text-6xl font-bold mb-6 dark:text-white leading-tight">
-                Everything you need,<br> 
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">in one place.</span>
+                Everything you need,<br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">in one
+                    place.</span>
             </h1>
             <p class="text-gray-600 dark:text-gray-400 text-lg mb-10 max-w-xl mx-auto">
-                A community-curated directory of resources for VIT students. 
+                A community-curated directory of resources for VIT students.
                 From academics to entertainment.
             </p>
 
             <div class="relative max-w-2xl mx-auto group z-50">
-                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                <div class="relative bg-white dark:bg-[#1e1e2e] rounded-2xl p-2 shadow-2xl flex flex-col md:flex-row gap-2 items-center">
-                    
+                <div
+                    class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200">
+                </div>
+                <div
+                    class="relative bg-white dark:bg-[#1e1e2e] rounded-2xl p-2 shadow-2xl flex flex-col md:flex-row gap-2 items-center">
+
                     <div class="flex-1 flex items-center pl-4 w-full">
                         <i class="fas fa-search text-gray-400 text-lg"></i>
-                        <input type="text" id="searchInput" placeholder="Search resources (e.g., 'calc', 'movies')..." 
+                        <input type="text" id="searchInput" placeholder="Search resources (e.g., 'calc', 'movies')..."
                             class="w-full bg-transparent border-none p-4 text-gray-800 dark:text-white focus:ring-0 placeholder-gray-400 text-lg custom-input">
                     </div>
-                    
+
                     <div class="h-8 w-[1px] bg-gray-200 dark:bg-gray-700 hidden md:block"></div>
-                    
+
                     <div class="relative w-full md:w-56 z-50">
                         <input type="hidden" id="filterSelect" value="all">
-                        
-                        <button id="dropdownTrigger" class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-left text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 focus:outline-none group">
+
+                        <button id="dropdownTrigger"
+                            class="w-full flex items-center justify-between bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-left text-gray-300 hover:bg-white/10 hover:text-white transition-all duration-300 focus:outline-none group">
                             <span id="dropdownLabel" class="flex items-center gap-2 font-medium truncate">
                                 <i class="fas fa-layer-group text-purple-400"></i> Everything
                             </span>
-                            <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:text-white transition-transform duration-300" id="dropdownArrow"></i>
+                            <i class="fas fa-chevron-down text-xs text-gray-500 group-hover:text-white transition-transform duration-300"
+                                id="dropdownArrow"></i>
                         </button>
 
-                        <div id="dropdownMenu" class="hidden absolute top-full right-0 mt-2 w-full bg-[#1e1e2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden origin-top-right transform transition-all duration-200 scale-95 opacity-0 z-50">
-                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition border-b border-white/5" data-value="all" data-icon="fa-layer-group" data-color="text-purple-400">
-                                <div class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 flex-shrink-0"><i class="fas fa-layer-group"></i></div>
+                        <div id="dropdownMenu"
+                            class="hidden absolute top-full right-0 mt-2 w-full bg-[#1e1e2e]/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden origin-top-right transform transition-all duration-200 scale-95 opacity-0 z-50">
+                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition border-b border-white/5"
+                                data-value="all" data-icon="fa-layer-group" data-color="text-purple-400">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400 flex-shrink-0">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
                                 <span class="font-medium truncate">Everything</span>
                             </div>
-                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition" data-value="favorites" data-icon="fa-star" data-color="text-yellow-400">
-                                <div class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 flex-shrink-0"><i class="fas fa-star"></i></div>
+                            <div class="dropdown-item px-4 py-3 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-gray-300 hover:text-white transition"
+                                data-value="favorites" data-icon="fa-star" data-color="text-yellow-400">
+                                <div
+                                    class="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center text-yellow-400 flex-shrink-0">
+                                    <i class="fas fa-star"></i>
+                                </div>
                                 <span class="font-medium truncate">Favorites</span>
                             </div>
                             <div class="h-px bg-white/10 my-1 mx-4"></div>
                             <div class="max-h-60 overflow-y-auto custom-scrollbar">
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="academics" data-icon="fa-graduation-cap" data-color="text-blue-400">
-                                    <i class="fas fa-graduation-cap w-5 text-center text-blue-400 flex-shrink-0"></i> Academics
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="academics" data-icon="fa-graduation-cap" data-color="text-blue-400">
+                                    <i class="fas fa-graduation-cap w-5 text-center text-blue-400 flex-shrink-0"></i>
+                                    Academics
                                 </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="notes" data-icon="fa-book" data-color="text-yellow-400">
-                                    <i class="fas fa-book w-5 text-center text-yellow-400 flex-shrink-0"></i> Notes & PYQs
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="entertainment" data-icon="fa-film" data-color="text-pink-400">
+                                    <i class="fas fa-film w-5 text-center text-pink-400 flex-shrink-0"></i>
+                                    Entertainment
                                 </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="entertainment" data-icon="fa-film" data-color="text-pink-400">
-                                    <i class="fas fa-film w-5 text-center text-pink-400 flex-shrink-0"></i> Entertainment
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="productivity" data-icon="fa-check-double" data-color="text-green-400">
+                                    <i class="fas fa-check-double w-5 text-center text-green-400 flex-shrink-0"></i>
+                                    Productivity
                                 </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="productivity" data-icon="fa-check-double" data-color="text-green-400">
-                                    <i class="fas fa-check-double w-5 text-center text-green-400 flex-shrink-0"></i> Productivity
-                                </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="coding" data-icon="fa-code" data-color="text-teal-400">
-                                    <i class="fas fa-code w-5 text-center text-teal-400 flex-shrink-0"></i> Coding
-                                </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="design" data-icon="fa-palette" data-color="text-orange-400">
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="design" data-icon="fa-palette" data-color="text-orange-400">
                                     <i class="fas fa-palette w-5 text-center text-orange-400 flex-shrink-0"></i> Design
                                 </div>
-                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="utilities" data-icon="fa-tools" data-color="text-gray-400">
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="utilities" data-icon="fa-tools" data-color="text-gray-400">
                                     <i class="fas fa-tools w-5 text-center text-gray-400 flex-shrink-0"></i> Utilities
                                 </div>
-                                 <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition" data-value="student-projects" data-icon="fa-flask" data-color="text-indigo-400">
+                                <div class="dropdown-item px-4 py-2.5 hover:bg-white/5 cursor-pointer flex items-center gap-3 text-sm text-gray-400 hover:text-white transition"
+                                    data-value="student-projects" data-icon="fa-flask" data-color="text-indigo-400">
                                     <i class="fas fa-flask w-5 text-center text-indigo-400 flex-shrink-0"></i> Projects
                                 </div>
                             </div>
@@ -239,7 +416,7 @@
             </div>
 
             <div id="subFilterContainer" class="mt-6 flex flex-wrap justify-center gap-2 hidden animate-slide-up">
-                </div>
+            </div>
         </div>
     </header>
 
@@ -247,9 +424,11 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-xl font-bold dark:text-white flex items-center gap-2">
                 <i class="fas fa-layer-group text-purple-500"></i> Resources
-                <span id="resourceCount" class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-600 dark:text-gray-300">0</span>
+                <span id="resourceCount"
+                    class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full text-gray-600 dark:text-gray-300">0</span>
             </h2>
-            <select id="sortSelect" class="bg-white dark:bg-[#1e1e2e] dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2 focus:outline-none focus:border-purple-500">
+            <select id="sortSelect"
+                class="bg-white dark:bg-[#1e1e2e] dark:text-gray-300 border border-gray-200 dark:border-gray-700 rounded-lg text-sm px-3 py-2 focus:outline-none focus:border-purple-500">
                 <option value="popular">Most Voted</option>
                 <option value="newest">Newest Added</option>
                 <option value="alpha">A-Z Name</option>
@@ -257,10 +436,11 @@
         </div>
 
         <div id="resourceGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            </div>
+        </div>
 
         <div id="paginationContainer" class="flex justify-center mt-12 hidden">
-            <button id="loadMoreBtn" class="bg-white/10 hover:bg-white/20 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-full font-bold transition shadow-lg flex items-center gap-2 border border-gray-200 dark:border-gray-700">
+            <button id="loadMoreBtn"
+                class="bg-white/10 hover:bg-white/20 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-full font-bold transition shadow-lg flex items-center gap-2 border border-gray-200 dark:border-gray-700">
                 Load More Resources <i class="fas fa-chevron-down"></i>
             </button>
         </div>
@@ -270,76 +450,101 @@
         <div class="container mx-auto px-6 text-center">
             <p class="text-gray-500 dark:text-gray-400 mb-2">&copy; 2024 VIT Site Hub. Built for students.</p>
             <div class="flex justify-center gap-4 text-sm">
-                <a href="main.html" class="text-gray-400 hover:text-purple-400 transition"><i class="fas fa-shield-alt"></i> Admin Login</a>
-                <a href="#" onclick="document.getElementById('suggestionModal').classList.remove('hidden')" class="text-gray-400 hover:text-purple-400 transition">Submit Site</a>
+                <a href="main.html" class="text-gray-400 hover:text-purple-400 transition"><i
+                        class="fas fa-shield-alt"></i> Admin Login</a>
+                <a href="#" onclick="document.getElementById('suggestionModal').classList.remove('hidden')"
+                    class="text-gray-400 hover:text-purple-400 transition">Submit Site</a>
             </div>
         </div>
     </footer>
 
-    <div id="suggestionModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div id="suggestionModal"
+        class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-[#1e1e2e] w-full max-w-md rounded-2xl shadow-2xl p-6 relative animate-slide-up">
-            <button onclick="document.getElementById('suggestionModal').classList.add('hidden')" class="absolute top-4 right-4 text-gray-400 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+            <button onclick="document.getElementById('suggestionModal').classList.add('hidden')"
+                class="absolute top-4 right-4 text-gray-400 hover:text-red-500"><i
+                    class="fas fa-times text-xl"></i></button>
             <h2 class="text-2xl font-bold mb-1 dark:text-white">Suggest a Resource</h2>
             <p class="text-gray-500 text-sm mb-6">Help us grow the library.</p>
-            
+
             <form id="suggestionForm" class="space-y-4">
-                <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c"> 
+                <input type="hidden" name="access_key" value="76a4594d-6f73-47f1-b59e-7472327cdb0c">
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Name</label>
-                    <input type="text" name="Site Name" required class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
+                    <input type="text" name="Site Name" required
+                        class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">URL</label>
-                    <input type="url" name="Site URL" required class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
+                    <input type="url" name="Site URL" required
+                        class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Why is this useful?</label>
-                    <textarea name="Reason" rows="3" class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500"></textarea>
+                    <textarea name="Reason" rows="3"
+                        class="w-full bg-gray-100 dark:bg-[#181825] border-none rounded-lg p-3 dark:text-white focus:ring-2 focus:ring-purple-500"></textarea>
                 </div>
-                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition">Send Suggestion</button>
+                <button type="submit"
+                    class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition">Send
+                    Suggestion</button>
             </form>
         </div>
     </div>
 
-    <div id="reportModal" class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div id="reportModal"
+        class="hidden fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-[#1e1e2e] w-full max-w-sm rounded-2xl shadow-2xl p-6 animate-slide-up">
-            <h2 class="text-xl font-bold mb-4 text-red-500 flex items-center gap-2"><i class="fas fa-flag"></i> Report Issue</h2>
+            <h2 class="text-xl font-bold mb-4 text-red-500 flex items-center gap-2"><i class="fas fa-flag"></i> Report
+                Issue</h2>
             <p id="reportTargetName" class="text-gray-500 text-sm mb-4 truncate">...</p>
-            
+
             <form id="reportForm" class="space-y-3">
                 <input type="hidden" id="reportResourceId">
                 <input type="hidden" id="reportResourceName">
-                
-                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <input type="radio" name="reportReason" value="Broken Link" checked class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+
+                <label
+                    class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Broken Link" checked
+                        class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
                     <span class="ml-3 text-sm font-medium dark:text-gray-300">Link is broken</span>
                 </label>
-                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <input type="radio" name="reportReason" value="Outdated Info" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                <label
+                    class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Outdated Info"
+                        class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
                     <span class="ml-3 text-sm font-medium dark:text-gray-300">Information is outdated</span>
                 </label>
-                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <input type="radio" name="reportReason" value="Wrong Category" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                <label
+                    class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Wrong Category"
+                        class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
                     <span class="ml-3 text-sm font-medium dark:text-gray-300">Wrong category</span>
                 </label>
-                <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <input type="radio" name="reportReason" value="Inappropriate" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                <label
+                    class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Inappropriate"
+                        class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
                     <span class="ml-3 text-sm font-medium dark:text-gray-300">Inappropriate content</span>
                 </label>
-                 <label class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                    <input type="radio" name="reportReason" value="Other" class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
+                <label
+                    class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-[#181825] cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+                    <input type="radio" name="reportReason" value="Other"
+                        class="text-red-500 focus:ring-red-500 bg-gray-700 border-gray-600">
                     <span class="ml-3 text-sm font-medium dark:text-gray-300">Other</span>
                 </label>
-                
+
                 <div class="flex gap-3 mt-4">
-                    <button type="button" onclick="document.getElementById('reportModal').classList.add('hidden')" class="flex-1 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm">Cancel</button>
-                    <button type="submit" class="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm">Report</button>
+                    <button type="button" onclick="document.getElementById('reportModal').classList.add('hidden')"
+                        class="flex-1 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm">Cancel</button>
+                    <button type="submit"
+                        class="flex-1 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm">Report</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <button id="toTopBtn" class="fixed bottom-6 right-6 hidden bg-purple-600 hover:bg-purple-700 text-white w-12 h-12 rounded-full shadow-lg z-40 items-center justify-center transition-all hover:scale-110">
+    <button id="toTopBtn"
+        class="fixed bottom-6 right-6 hidden bg-purple-600 hover:bg-purple-700 text-white w-12 h-12 rounded-full shadow-lg z-40 items-center justify-center transition-all hover:scale-110">
         <i class="fas fa-arrow-up"></i>
     </button>
 
@@ -402,13 +607,13 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
-          apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
-          authDomain: "site-hub-29fb2.firebaseapp.com",
-          projectId: "site-hub-29fb2",
-          storageBucket: "site-hub-29fb2.firebasestorage.app",
-          messagingSenderId: "373988520340",
-          appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
-          measurementId: "G-DDEMB3X2XQ"
+            apiKey: "AIzaSyB8f4b8xdU5Uq-HHqQ8kwxG6i18zdi8JAo",
+            authDomain: "site-hub-29fb2.firebaseapp.com",
+            projectId: "site-hub-29fb2",
+            storageBucket: "site-hub-29fb2.firebasestorage.app",
+            messagingSenderId: "373988520340",
+            appId: "1:373988520340:web:f9eafe75c8de05cca55f81",
+            measurementId: "G-DDEMB3X2XQ"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -417,13 +622,22 @@
 
         // State
         let allResources = [];
-        let filteredResources = []; 
+        let filteredResources = [];
         let favorites = JSON.parse(localStorage.getItem('vsh_favorites') || '[]');
         let userUid = null;
         let activeSubFilter = 'all';
         let searchTimeout;
         const ITEMS_PER_PAGE = 12;
         let currentPage = 1;
+
+        const predefinedSubcats = {
+            academics: ['notes', 'coding'],
+            entertainment: ['movies', 'anime', 'music'],
+            productivity: ['tools', 'planning'],
+            design: ['ui-ux', 'graphics', 'inspirations'],
+            utilities: [],
+            'student-projects': ['web', 'app']
+        };
 
         // --- AUTH & INIT ---
         onAuthStateChanged(auth, (user) => {
@@ -438,34 +652,51 @@
 
         // --- CORE FUNCTIONS ---
         function showSkeletons() {
-             const grid = document.getElementById('resourceGrid');
-             let html = '';
-             for(let i=0; i<8; i++) {
-                 html += `
-                    <div class="glass-panel rounded-2xl p-6 h-48 animate-pulse">
+            const grid = document.getElementById('resourceGrid');
+            let html = '';
+            for (let i = 0; i < 8; i++) {
+                html += `
+                    <div class="glass-panel rounded-2xl p-6 h-48">
                         <div class="flex justify-between mb-4">
-                            <div class="h-6 w-32 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                            <div class="h-6 w-6 bg-gray-300 dark:bg-gray-700 rounded-full"></div>
+                            <div class="h-6 w-32 skeleton-shimmer rounded"></div>
+                            <div class="h-6 w-6 skeleton-shimmer rounded-full"></div>
                         </div>
-                        <div class="h-4 w-full bg-gray-200 dark:bg-gray-800 rounded mb-2"></div>
-                        <div class="h-4 w-2/3 bg-gray-200 dark:bg-gray-800 rounded"></div>
+                        <div class="h-4 w-full skeleton-shimmer rounded mb-2 mt-4"></div>
+                        <div class="h-4 w-2/3 skeleton-shimmer rounded"></div>
                     </div>`;
-             }
-             grid.innerHTML = html;
+            }
+            grid.innerHTML = html;
         }
 
         async function loadResources() {
             try {
                 const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
                 const snap = await getDocs(q);
-                allResources = snap.docs.map(doc => ({ 
-                    id: doc.id, 
-                    ...doc.data(),
-                    categories: doc.data().categories || [],
-                    subcategories: doc.data().subcategories || [],
-                    createdAtVal: doc.data().createdAt?.seconds || 0
-                }));
-                filterResources(true); 
+                allResources = snap.docs.map(doc => {
+                    let data = doc.data();
+                    let cats = data.categories || [];
+                    let subcats = data.subcategories || [];
+
+                    if (cats.includes('notes')) {
+                        cats = cats.filter(c => c !== 'notes');
+                        if (!cats.includes('academics')) cats.push('academics');
+                        if (!subcats.includes('notes')) subcats.push('notes');
+                    }
+                    if (cats.includes('coding')) {
+                        cats = cats.filter(c => c !== 'coding');
+                        if (!cats.includes('academics')) cats.push('academics');
+                        if (!subcats.includes('coding')) subcats.push('coding');
+                    }
+
+                    return {
+                        id: doc.id,
+                        ...data,
+                        categories: cats,
+                        subcategories: subcats,
+                        createdAtVal: data.createdAt?.seconds || 0
+                    };
+                });
+                filterResources(true);
             } catch (err) {
                 console.error(err);
                 document.getElementById('resourceGrid').innerHTML = `<div class="col-span-full text-center text-red-400 py-10">Failed to load resources.</div>`;
@@ -478,7 +709,7 @@
             document.getElementById('resourceCount').innerText = filteredResources.length;
 
             if (!append) grid.innerHTML = '';
-            
+
             if (data.length === 0 && !append) {
                 grid.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center text-gray-400 py-16"><i class="fas fa-search text-5xl mb-4 opacity-20"></i><p>No resources found matching your criteria.</p></div>`;
                 loadMoreBtn.classList.add('hidden');
@@ -497,12 +728,12 @@
 
             data.forEach((r, index) => {
                 const isFav = favorites.includes(r.id);
-                const isNew = (Date.now()/1000 - r.createdAtVal) < (7*86400); 
+                const isNew = (Date.now() / 1000 - r.createdAtVal) < (7 * 86400);
                 const hasVoted = r.votedBy?.includes(userUid);
 
                 const card = document.createElement('div');
                 card.className = 'glass-panel rounded-2xl p-5 relative flex flex-col h-full group card-enter';
-                
+
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-3">
                         <div class="flex-1 pr-2">
@@ -528,7 +759,8 @@
                     <div class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
                         <div class="flex items-center gap-1">
                             <button id="vote-btn-${r.id}" onclick="handleVote('${r.id}')" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${hasVoted ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200'} transition text-sm font-semibold">
-                                <i class="fas fa-arrow-up"></i> <span id="vote-count-${r.id}">${r.votes || 0}</span>
+                                <i class="fas fa-thumbs-up"></i>
+                                <span class="ticker-wrap"><span id="vote-count-${r.id}" class="ticker-col"><span class="ticker-item">${r.votes || 0}</span></span></span>
                             </button>
                         </div>
                         <div class="flex gap-2">
@@ -555,15 +787,15 @@
             const sort = document.getElementById('sortSelect').value;
 
             const subContainer = document.getElementById('subFilterContainer');
-            if (mainCat === 'entertainment') {
+            if (predefinedSubcats[mainCat] && predefinedSubcats[mainCat].length > 0) {
                 subContainer.classList.remove('hidden');
-                const subCats = new Set();
-                allResources.filter(r => r.categories.includes('entertainment')).forEach(r => r.subcategories.forEach(s => subCats.add(s)));
-                
+
                 let html = `<button onclick="setSubFilter('all')" class="sub-filter-btn px-3 py-1 rounded-full text-xs border border-gray-600 text-gray-400 hover:bg-white/10 ${activeSubFilter === 'all' ? 'active' : ''}">All</button>`;
-                subCats.forEach(sc => {
-                    html += `<button onclick="setSubFilter('${sc}')" class="sub-filter-btn px-3 py-1 rounded-full text-xs border border-gray-600 text-gray-400 hover:bg-white/10 capitalize ${activeSubFilter === sc ? 'active' : ''}">${sc}</button>`;
+
+                predefinedSubcats[mainCat].forEach(sc => {
+                    html += `<button onclick="setSubFilter('${sc}')" class="sub-filter-btn px-3 py-1 rounded-full text-xs border border-gray-600 text-gray-400 hover:bg-white/10 capitalize ${activeSubFilter === sc ? 'active' : ''}">${sc.replace('-', ' ')}</button>`;
                 });
+
                 subContainer.innerHTML = html;
             } else {
                 subContainer.classList.add('hidden');
@@ -571,11 +803,14 @@
             }
 
             filteredResources = allResources.filter(r => {
-                const matchesSearch = r.name.toLowerCase().includes(term) || (r.description||'').toLowerCase().includes(term);
-                const matchesMainCat = mainCat === 'all' || 
-                                       (mainCat === 'favorites' && favorites.includes(r.id)) || 
-                                       r.categories.includes(mainCat);
-                const matchesSubCat = activeSubFilter === 'all' || r.subcategories.includes(activeSubFilter);
+                const matchesSearch = r.name.toLowerCase().includes(term) || (r.description || '').toLowerCase().includes(term);
+                const matchesMainCat = mainCat === 'all' ||
+                    (mainCat === 'favorites' && favorites.includes(r.id)) ||
+                    r.categories.includes(mainCat);
+
+                const hasNoSubcats = !r.subcategories || r.subcategories.length === 0;
+                const matchesSubCat = activeSubFilter === 'all' || r.subcategories.includes(activeSubFilter) || hasNoSubcats;
+
                 return matchesSearch && matchesMainCat && matchesSubCat;
             });
 
@@ -586,7 +821,7 @@
                 return 0;
             });
 
-            if(resetPagination) currentPage = 1;
+            if (resetPagination) currentPage = 1;
             const paginatedItems = filteredResources.slice(0, currentPage * ITEMS_PER_PAGE);
             renderResources(paginatedItems);
         };
@@ -601,36 +836,43 @@
         });
 
         document.getElementById('searchInput').addEventListener('input', (e) => {
-            filterResources(true); 
+            filterResources(true);
             clearTimeout(searchTimeout);
             const query = e.target.value.trim();
-            if(query.length > 2) {
+            if (query.length > 2) {
                 searchTimeout = setTimeout(async () => {
                     try {
                         await addDoc(collection(db, 'stats_search'), { term: query, timestamp: serverTimestamp() });
-                    } catch(err) { console.error(err); }
+                    } catch (err) { console.error(err); }
                 }, 2000);
             }
         });
 
         window.setSubFilter = (sub) => { activeSubFilter = sub; filterResources(true); };
-        
+
         // Listen for hidden input change (from custom dropdown)
         document.getElementById('filterSelect').addEventListener('change', () => filterResources(true));
         document.getElementById('sortSelect').addEventListener('change', () => filterResources(true));
 
         // --- ACTIONS ---
         window.toggleFav = (id) => {
-            if(favorites.includes(id)) favorites = favorites.filter(f => f !== id);
+            const isAdding = !favorites.includes(id);
+            if (!isAdding) favorites = favorites.filter(f => f !== id);
             else favorites.push(id);
+
             localStorage.setItem('vsh_favorites', JSON.stringify(favorites));
-            
+
             const icon = document.getElementById(`fav-icon-${id}`);
-            if(icon) {
-                icon.className = favorites.includes(id) ? 'fas fa-heart text-red-500 text-lg' : 'far fa-heart text-gray-400 text-lg';
+            if (icon) {
+                if (isAdding) {
+                    icon.className = 'fas fa-heart text-red-500 text-lg heart-pop';
+                    setTimeout(() => { if (icon) icon.classList.remove('heart-pop'); }, 300);
+                } else {
+                    icon.className = 'far fa-heart text-gray-400 text-lg transition transform hover:scale-110';
+                }
             }
-            if(document.getElementById('filterSelect').value === 'favorites') filterResources(true);
-            showToast(favorites.includes(id) ? 'Added to Favorites' : 'Removed from Favorites');
+            if (document.getElementById('filterSelect').value === 'favorites') filterResources(true);
+            showToast(isAdding ? 'Added to Favorites' : 'Removed from Favorites');
         };
 
         window.handleVote = async (id) => {
@@ -638,25 +880,50 @@
             const res = allResources.find(r => r.id === id);
             const btn = document.getElementById(`vote-btn-${id}`);
             const countSpan = document.getElementById(`vote-count-${id}`);
-            
+
             btn.disabled = true;
             const hasVoted = res.votedBy?.includes(userUid);
             const ref = doc(db, 'resources', id);
 
             try {
-                if(hasVoted) {
+                if (hasVoted) {
                     await updateDoc(ref, { votes: increment(-1), votedBy: arrayRemove(userUid) });
                     res.votes = (res.votes || 0) - 1;
                     res.votedBy = res.votedBy.filter(u => u !== userUid);
                 } else {
                     await updateDoc(ref, { votes: increment(1), votedBy: arrayUnion(userUid) });
                     res.votes = (res.votes || 0) + 1;
-                    if(!res.votedBy) res.votedBy = [];
+                    if (!res.votedBy) res.votedBy = [];
                     res.votedBy.push(userUid);
                 }
-                countSpan.innerText = res.votes;
-                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition text-sm font-semibold ${!hasVoted ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`;
-            } catch(e) { console.error(e); showToast('Vote failed', 'error'); } 
+                
+                if (!hasVoted) {
+                    // Upvote visual animation
+                    countSpan.innerHTML += `<span class="ticker-item">${res.votes}</span>`;
+                    void countSpan.offsetWidth; // Force reflow
+                    countSpan.style.transform = `translateY(-1.25rem)`;
+                    setTimeout(() => {
+                        countSpan.style.transition = 'none';
+                        countSpan.style.transform = 'translateY(0)';
+                        countSpan.innerHTML = `<span class="ticker-item">${res.votes}</span>`;
+                        void countSpan.offsetWidth;
+                        countSpan.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    }, 400);
+                } else {
+                    // Downvote visual animation
+                    countSpan.innerHTML = `<span class="ticker-item">${res.votes}</span>` + countSpan.innerHTML;
+                    countSpan.style.transition = 'none';
+                    countSpan.style.transform = `translateY(-1.25rem)`;
+                    void countSpan.offsetWidth; // Force reflow
+                    countSpan.style.transition = 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    countSpan.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        countSpan.innerHTML = `<span class="ticker-item">${res.votes}</span>`;
+                    }, 400);
+                }
+
+                btn.className = `flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition text-sm font-semibold ${!hasVoted ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-300' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200'}`;
+            } catch (e) { console.error(e); showToast('Vote failed', 'error'); }
             finally { btn.disabled = false; }
         };
 
@@ -688,7 +955,7 @@
                 showToast('Report submitted. Thank you.');
                 document.getElementById('reportModal').classList.add('hidden');
                 e.target.reset();
-            } catch(err) { showToast('Error submitting report', 'error'); }
+            } catch (err) { showToast('Error submitting report', 'error'); }
             finally { btn.innerText = 'Report'; }
         });
 
@@ -698,7 +965,7 @@
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.innerText;
             btn.disabled = true; btn.innerText = 'Sending...';
-            
+
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
 
@@ -719,16 +986,16 @@
                 showToast('Suggestion sent successfully!');
                 document.getElementById('suggestionModal').classList.add('hidden');
                 e.target.reset();
-            } catch(err) { showToast('Error sending suggestion', 'error'); }
+            } catch (err) { showToast('Error sending suggestion', 'error'); }
             finally { btn.disabled = false; btn.innerText = originalText; }
         });
 
         // --- THEME ---
         const themeBtn = document.getElementById('theme-toggle');
         const themeIcon = document.getElementById('theme-icon');
-        
+
         function updateTheme(isDark) {
-            if(isDark) {
+            if (isDark) {
                 document.documentElement.classList.add('dark');
                 themeIcon.classList.replace('fa-moon', 'fa-sun');
             } else {
@@ -748,17 +1015,17 @@
 
         // --- ANNOUNCEMENT ---
         onSnapshot(doc(db, 'settings', 'config'), (doc) => {
-            if(doc.exists()) {
+            if (doc.exists()) {
                 const d = doc.data();
                 const banner = document.getElementById('announcement-banner');
-                if(d.showAnnouncement && d.announcementText) {
+                if (d.showAnnouncement && d.announcementText) {
                     document.getElementById('announcement-text').innerText = d.announcementText;
                     banner.classList.remove('hidden');
                     banner.className = `relative z-50 px-4 py-3 text-center text-sm font-medium animate-slide-up shadow-lg flex items-center justify-center gap-2`;
-                    
-                    if(d.announcementType === 'error') banner.classList.add('bg-red-500', 'text-white');
-                    else if(d.announcementType === 'success') banner.classList.add('bg-green-500', 'text-white');
-                    else if(d.announcementType === 'warning') banner.classList.add('bg-yellow-400', 'text-black');
+
+                    if (d.announcementType === 'error') banner.classList.add('bg-red-500', 'text-white');
+                    else if (d.announcementType === 'success') banner.classList.add('bg-green-500', 'text-white');
+                    else if (d.announcementType === 'warning') banner.classList.add('bg-yellow-400', 'text-black');
                     else banner.classList.add('bg-blue-500', 'text-white');
                 } else {
                     banner.classList.add('hidden');
@@ -767,10 +1034,10 @@
         });
         document.getElementById('close-announcement').addEventListener('click', () => document.getElementById('announcement-banner').classList.add('hidden'));
 
-        function showToast(msg, type='success') {
+        function showToast(msg, type = 'success') {
             const t = document.createElement('div');
-            t.className = `pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-md transform transition-all duration-300 translate-y-10 opacity-0 ${type==='error'?'bg-red-500/90 text-white':'bg-white/90 text-gray-800 dark:bg-gray-800/90 dark:text-white'}`;
-            t.innerHTML = `<i class="${type==='error'?'fas fa-exclamation-circle':'fas fa-check-circle'} text-lg ${type==='success'?'text-green-500':''}"></i> <span class="font-medium">${msg}</span>`;
+            t.className = `pointer-events-auto flex items-center gap-3 px-6 py-4 rounded-xl shadow-2xl backdrop-blur-md transform transition-all duration-300 translate-y-10 opacity-0 ${type === 'error' ? 'bg-red-500/90 text-white' : 'bg-white/90 text-gray-800 dark:bg-gray-800/90 dark:text-white'}`;
+            t.innerHTML = `<i class="${type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle'} text-lg ${type === 'success' ? 'text-green-500' : ''}"></i> <span class="font-medium">${msg}</span>`;
             document.getElementById('toast-container').appendChild(t);
             requestAnimationFrame(() => t.classList.remove('translate-y-10', 'opacity-0'));
             setTimeout(() => {
@@ -781,11 +1048,12 @@
 
         const toTopBtn = document.getElementById('toTopBtn');
         window.addEventListener('scroll', () => {
-            if(window.scrollY > 300) toTopBtn.classList.replace('hidden', 'flex');
+            if (window.scrollY > 300) toTopBtn.classList.replace('hidden', 'flex');
             else toTopBtn.classList.replace('flex', 'hidden');
         });
-        toTopBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+        toTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
     </script>
 </body>
+
 </html>

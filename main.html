@@ -219,9 +219,7 @@
                                 <option value="all">All Categories</option>
                                 <option value="entertainment">Entertainment</option>
                                 <option value="academics">Academics</option>
-                                <option value="notes">Notes & PYQs</option>
                                 <option value="productivity">Productivity</option>
-                                <option value="coding">Coding & Dev</option>
                                 <option value="design">Design</option>
                                 <option value="utilities">Utilities</option>
                             </select>
@@ -348,11 +346,11 @@
                         <label class="block text-xs font-semibold text-gray-400 mb-2">Categories (Select Multiple)</label>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
                             <script>
-                                const cats = ['entertainment', 'academics', 'notes', 'productivity', 'coding', 'design', 'utilities', 'student-projects'];
+                                const cats = ['entertainment', 'academics', 'productivity', 'design', 'utilities', 'student-projects'];
                                 cats.forEach(c => {
                                     document.write(`
                                         <label class="flex items-center space-x-2 cursor-pointer p-2 bg-white/5 rounded hover:bg-white/10 transition">
-                                            <input type="checkbox" value="${c}" class="cat-check w-4 h-4 rounded bg-gray-700 border-gray-600 text-purple-600 focus:ring-purple-500">
+                                            <input type="checkbox" value="${c}" onchange="updateSubcatCheckboxes()" class="cat-check w-4 h-4 rounded bg-gray-700 border-gray-600 text-purple-600 focus:ring-purple-500">
                                             <span class="text-xs text-gray-200 capitalize">${c.replace('-', ' ')}</span>
                                         </label>
                                     `);
@@ -361,10 +359,14 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1">Subcategories (Comma separated)</label>
-                        <input type="text" id="formSubcats" placeholder="e.g. math, calc, graph" class="w-full glass-input rounded-lg p-2.5">
+                    <div class="col-span-1 md:col-span-2" id="dynamicSubcatsSection" style="display: none;">
+                        <label class="block text-xs font-semibold text-gray-400 mb-2">Subcategories</label>
+                        <div class="flex flex-col gap-2 p-3 bg-white/5 rounded-lg border border-white/10" id="dynamicSubcatsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
                     </div>
+
+
                     
                     <div class="flex flex-col gap-2">
                         <label class="block text-xs font-semibold text-gray-400 mb-1">Status</label>
@@ -474,7 +476,23 @@
             try {
                 const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
                 const snap = await getDocs(q);
-                allResources = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                allResources = snap.docs.map(d => {
+                    let data = d.data();
+                    let cats = data.categories || [];
+                    let subcats = data.subcategories || [];
+                    
+                    if (cats.includes('notes')) {
+                        cats = cats.filter(c => c !== 'notes');
+                        if (!cats.includes('academics')) cats.push('academics');
+                        if (!subcats.includes('notes')) subcats.push('notes');
+                    }
+                    if (cats.includes('coding')) {
+                        cats = cats.filter(c => c !== 'coding');
+                        if (!cats.includes('academics')) cats.push('academics');
+                        if (!subcats.includes('coding')) subcats.push('coding');
+                    }
+                    return { id: d.id, ...data, categories: cats, subcategories: subcats };
+                });
                 
                 // Update Stats
                 document.getElementById('statTotalResources').innerText = allResources.length;
@@ -526,7 +544,6 @@
             });
         }
 
-        // Filtering
         const filterFn = () => {
             const text = document.getElementById('searchResources').value.toLowerCase();
             const cat = document.getElementById('filterResources').value;
@@ -598,6 +615,49 @@
             document.getElementById('resourceId').value = '';
             document.getElementById('suggestionRefId').value = '';
             document.getElementById('voteEditContainer').classList.add('hidden');
+            document.getElementById('dynamicSubcatsContainer').innerHTML = '';
+            document.getElementById('dynamicSubcatsSection').style.display = 'none';
+        };
+
+        const predefinedSubcats = {
+            academics: ['notes', 'coding'],
+            entertainment: ['movies', 'anime', 'music'],
+            productivity: ['tools', 'planning'],
+            design: ['ui-ux', 'graphics', 'inspirations'],
+            utilities: [],
+            'student-projects': ['web', 'app']
+        };
+
+        window.updateSubcatCheckboxes = () => {
+            const container = document.getElementById('dynamicSubcatsContainer');
+            const section = document.getElementById('dynamicSubcatsSection');
+            const selectedCats = Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value);
+            
+            let html = '';
+            let showSection = false;
+            
+            selectedCats.forEach(cat => {
+                if (predefinedSubcats[cat]) {
+                    showSection = true;
+                    html += `
+                        <div class="w-full">
+                            <div class="text-[10px] text-purple-400 font-bold uppercase mb-2 tracking-wider border-b border-purple-400/20 pb-1">${cat.replace('-', ' ')}</div>
+                            <div class="flex flex-wrap gap-2">
+                    `;
+                    predefinedSubcats[cat].forEach(sub => {
+                        html += `
+                            <label class="flex items-center space-x-2 cursor-pointer p-1.5 px-3 bg-[#11111b] border border-white/5 rounded-full hover:bg-white/10 transition">
+                                <input type="checkbox" value="${sub}" class="subcat-check w-3 h-3 rounded-sm bg-gray-700 border-gray-600 text-blue-500 focus:ring-blue-500">
+                                <span class="text-xs text-gray-300 capitalize font-medium">${sub.replace('-', ' ')}</span>
+                            </label>
+                        `;
+                    });
+                    html += `</div></div>`;
+                }
+            });
+            
+            container.innerHTML = html;
+            section.style.display = showSection ? 'block' : 'none';
         };
 
         window.editResource = (id) => {
@@ -608,7 +668,6 @@
             document.getElementById('formName').value = r.name;
             document.getElementById('formUrl').value = r.url;
             document.getElementById('formDescription').value = r.description || '';
-            document.getElementById('formSubcats').value = (r.subcategories || []).join(', ');
             document.getElementById('formVerified').checked = r.isVerified || false;
             document.getElementById('formVotes').value = r.votes || 0;
             document.getElementById('voteEditContainer').classList.remove('hidden');
@@ -618,6 +677,17 @@
                 cb.checked = (r.categories || []).includes(cb.value);
             });
             
+            // Update the subcategory checkboxes UI based on categories
+            window.updateSubcatCheckboxes();
+            
+            // Re-check subcategories
+            const allSubcatCheckboxes = Array.from(document.querySelectorAll('.subcat-check'));
+            
+            (r.subcategories || []).forEach(sub => {
+                const cb = allSubcatCheckboxes.find(c => c.value === sub);
+                if (cb) cb.checked = true;
+            });
+            
             document.getElementById('addResourceModal').classList.remove('hidden');
         };
 
@@ -625,12 +695,15 @@
             e.preventDefault();
             const id = document.getElementById('resourceId').value;
             const suggId = document.getElementById('suggestionRefId').value;
+            
+            const checkedSubcats = Array.from(document.querySelectorAll('.subcat-check:checked')).map(c => c.value);
+
             const data = {
                 name: document.getElementById('formName').value,
                 url: document.getElementById('formUrl').value,
                 description: document.getElementById('formDescription').value,
                 categories: Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value),
-                subcategories: document.getElementById('formSubcats').value.split(',').map(s => s.trim()).filter(s => s),
+                subcategories: checkedSubcats,
                 isVerified: document.getElementById('formVerified').checked
             };
 
