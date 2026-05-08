@@ -375,6 +375,10 @@
                                 <input type="checkbox" id="formVerified" class="w-4 h-4 rounded bg-gray-700 text-blue-500">
                                 <span class="text-sm text-blue-300"><i class="fas fa-check-circle"></i> Verified</span>
                             </label>
+                             <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="formHidden" class="w-4 h-4 rounded bg-gray-700 text-amber-500">
+                                <span class="text-sm text-amber-300"><i class="fas fa-eye-slash"></i> Hidden</span>
+                            </label>
                         </div>
                          <div id="voteEditContainer" class="mt-2">
                             <label class="text-xs text-gray-500 mb-1 block">Vote Count Adjustment</label>
@@ -536,6 +540,9 @@
                         </div>
                     </td>
                     <td class="p-4 text-right">
+                        <button onclick="toggleHideResource('${r.id}', ${r.isHidden || false})" class="${r.isHidden ? 'text-amber-500' : 'text-gray-400'} hover:text-white px-2 transition" title="${r.isHidden ? 'Unhide from Main Site' : 'Hide from Main Site'}">
+                            <i class="fas ${r.isHidden ? 'fa-eye-slash' : 'fa-eye'}"></i>
+                        </button>
                         <button onclick="editResource('${r.id}')" class="text-gray-400 hover:text-white px-2 transition"><i class="fas fa-pen"></i></button>
                         <button onclick="deleteResource('${r.id}')" class="text-gray-400 hover:text-red-400 px-2 transition"><i class="fas fa-trash"></i></button>
                     </td>
@@ -669,6 +676,7 @@
             document.getElementById('formUrl').value = r.url;
             document.getElementById('formDescription').value = r.description || '';
             document.getElementById('formVerified').checked = r.isVerified || false;
+            document.getElementById('formHidden').checked = r.isHidden || false;
             document.getElementById('formVotes').value = r.votes || 0;
             
             // Set Categories
@@ -703,7 +711,8 @@
                 description: document.getElementById('formDescription').value,
                 categories: Array.from(document.querySelectorAll('.cat-check:checked')).map(c => c.value),
                 subcategories: checkedSubcats,
-                isVerified: document.getElementById('formVerified').checked
+                isVerified: document.getElementById('formVerified').checked,
+                isHidden: document.getElementById('formHidden').checked
             };
 
             if (data.categories.length === 0) { showToast("Select at least 1 category", "error"); return; }
@@ -733,6 +742,16 @@
             } catch (err) { showToast(err.message, "error"); }
             finally { btn.disabled = false; btn.innerText = "Save Resource"; }
         });
+
+        window.toggleHideResource = async (id, currentHidden) => {
+            try {
+                await updateDoc(doc(db, 'resources', id), { isHidden: !currentHidden });
+                showToast(`Resource ${!currentHidden ? 'hidden' : 'unhidden'} successfully`);
+                initDashboard();
+            } catch (err) {
+                showToast("Operation failed", "error");
+            }
+        };
 
         window.deleteResource = (id) => {
             const btn = document.getElementById('confirmActionBtn');

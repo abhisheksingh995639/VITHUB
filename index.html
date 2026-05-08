@@ -702,30 +702,32 @@
             try {
                 const q = query(collection(db, 'resources'), orderBy('votes', 'desc'));
                 const snap = await getDocs(q);
-                allResources = snap.docs.map(doc => {
-                    let data = doc.data();
-                    let cats = data.categories || [];
-                    let subcats = data.subcategories || [];
+                allResources = snap.docs
+                    .map(doc => {
+                        let data = doc.data();
+                        let cats = data.categories || [];
+                        let subcats = data.subcategories || [];
 
-                    if (cats.includes('notes')) {
-                        cats = cats.filter(c => c !== 'notes');
-                        if (!cats.includes('academics')) cats.push('academics');
-                        if (!subcats.includes('notes')) subcats.push('notes');
-                    }
-                    if (cats.includes('coding')) {
-                        cats = cats.filter(c => c !== 'coding');
-                        if (!cats.includes('academics')) cats.push('academics');
-                        if (!subcats.includes('coding')) subcats.push('coding');
-                    }
+                        if (cats.includes('notes')) {
+                            cats = cats.filter(c => c !== 'notes');
+                            if (!cats.includes('academics')) cats.push('academics');
+                            if (!subcats.includes('notes')) subcats.push('notes');
+                        }
+                        if (cats.includes('coding')) {
+                            cats = cats.filter(c => c !== 'coding');
+                            if (!cats.includes('academics')) cats.push('academics');
+                            if (!subcats.includes('coding')) subcats.push('coding');
+                        }
 
-                    return {
-                        id: doc.id,
-                        ...data,
-                        categories: cats,
-                        subcategories: subcats,
-                        createdAtVal: data.createdAt?.seconds || 0
-                    };
-                });
+                        return {
+                            id: doc.id,
+                            ...data,
+                            categories: cats,
+                            subcategories: subcats,
+                            createdAtVal: data.createdAt?.seconds || 0
+                        };
+                    })
+                    .filter(r => !r.isHidden);
                 filterResources(true);
             } catch (err) {
                 console.error(err);
