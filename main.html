@@ -728,27 +728,57 @@
                     // Update
                     await updateDoc(doc(db, 'resources', id), data);
                     showToast("Resource updated");
+                    
+                    // Update local state
+                    const idx = allResources.findIndex(r => r.id === id);
+                    if (idx !== -1) {
+                        allResources[idx] = { ...allResources[idx], ...data };
+                    }
                 } else {
                     // Create
                     data.status = 'approved';
                     data.votedBy = [];
                     data.createdAt = serverTimestamp();
-                    await addDoc(collection(db, 'resources'), data);
+                    const docRef = await addDoc(collection(db, 'resources'), data);
+                    
+                    // Add to local state
+                    allResources.push({ id: docRef.id, ...data });
+                    
                     if (suggId) await deleteDoc(doc(db, 'suggestions', suggId));
                     showToast("Resource added");
                 }
                 closeModal();
-                initDashboard();
+                
+                // Update UI without full refresh
+                filterFn();
+                renderCharts();
+                document.getElementById('statTotalResources').innerText = allResources.length;
+                document.getElementById('statTotalVotes').innerText = allResources.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+                
+                // If it was a suggestion, we still need to reload inbox
+                if (suggId) loadInbox();
             } catch (err) { showToast(err.message, "error"); }
             finally { btn.disabled = false; btn.innerText = "Save Resource"; }
         });
 
         window.toggleHideResource = async (id, currentHidden) => {
+            // Optimistic Update: Update local state immediately for instant feedback
+            const resource = allResources.find(r => r.id === id);
+            if (resource) {
+                resource.isHidden = !currentHidden;
+                filterFn(); // Re-render the table with current search/filter state
+            }
+
             try {
                 await updateDoc(doc(db, 'resources', id), { isHidden: !currentHidden });
                 showToast(`Resource ${!currentHidden ? 'hidden' : 'unhidden'} successfully`);
-                initDashboard();
+                // We no longer call initDashboard() here to prevent the "sheet refresh"
             } catch (err) {
+                // Rollback on failure
+                if (resource) {
+                    resource.isHidden = currentHidden;
+                    filterFn();
+                }
                 showToast("Operation failed", "error");
             }
         };
@@ -756,12 +786,27 @@
         window.deleteResource = (id) => {
             const btn = document.getElementById('confirmActionBtn');
             btn.onclick = async () => {
+                const originalResources = [...allResources]; // Keep for rollback
                 try {
+                    // Optimistic Delete: Update local state immediately
+                    allResources = allResources.filter(r => r.id !== id);
+                    filterFn();
+                    document.getElementById('statTotalResources').innerText = allResources.length;
+                    document.getElementById('statTotalVotes').innerText = allResources.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+                    renderCharts();
+
                     await deleteDoc(doc(db, 'resources', id));
                     document.getElementById('confirmModal').classList.add('hidden');
                     showToast("Deleted successfully");
-                    initDashboard();
-                } catch (err) { showToast("Delete failed", "error"); }
+                } catch (err) { 
+                    // Rollback on failure
+                    allResources = originalResources;
+                    filterFn();
+                    document.getElementById('statTotalResources').innerText = allResources.length;
+                    document.getElementById('statTotalVotes').innerText = allResources.reduce((acc, curr) => acc + (curr.votes || 0), 0);
+                    renderCharts();
+                    showToast("Delete failed", "error"); 
+                }
             };
             document.getElementById('confirmText').innerText = "This action cannot be undone. Delete this resource?";
             document.getElementById('confirmModal').classList.remove('hidden');
